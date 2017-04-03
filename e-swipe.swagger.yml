@@ -1,0 +1,181 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: E-swipe
+  description: Move your app forward with the Uber API
+  version: "1.0.0"
+# the domain of the service
+host: api.uber.com
+# array of all schemes that your API supports
+schemes:
+  - https
+# will be prefixed to all paths
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /profile:
+    get:
+      summary: wow
+      parameters:
+        - name: uuid
+          in: query
+          description: profile id
+          required: true
+          type: string
+      responses:
+        200:
+          description: An array of products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Profile'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User
+  /me:
+    get:
+      summary: user profile
+      responses:
+        200:
+          description: test
+          schema:
+            $ref: '#/definitions/Profile'
+      tags:
+        - User
+  /events:
+    get:
+      summary: List of events
+      description: Get all the events from a position
+      parameters:
+        - name: latitude
+          in: query
+          description: Latitude component of location.
+          required: true
+          type: number
+          format: double
+        - name: longitude
+          in: query
+          description: Longitude component of location.
+          required: true
+          type: number
+          format: double
+        - name: raduis
+          in: query
+          description: raduis of detection default is 50 max is 100
+          type: integer
+        - name: offset
+          type: integer
+          in: query
+          description: offset of the results, default is 0
+        - name: limit
+          type: integer
+          in: query
+          description: number of results default is 20 max is 100
+      responses:
+        200:
+          description: an array of events
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Event'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - Event
+        - User
+definitions:
+  Event:
+    type: object
+    properties:
+      uuid:
+        type: string
+      name:
+        type: string
+        description: name of the event
+      description:
+        type: string
+        description: description of the event
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+        description: Images of the event
+      localisation:
+        $ref: '#/definitions/Localisation'
+      date_begin:
+        type: string
+      date_end:
+        type: string
+  Localisation:
+    type: object
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+  Profile:
+    type: object
+    properties:
+      uuid:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      age:
+        type: integer
+      description:
+        type: string
+      email:
+        type: string
+      facebook_id:
+        type: string
+      pictures:
+        type: array
+        items:
+          $ref: "#/definitions/Image/properties/path"
+        description: Images of the profile.
+      genders:
+        type: array
+        items:
+          $ref: "#/definitions/Gender"
+        description: genders of the user
+      looking_for:
+        type: array
+        items:
+          $ref: "#/definitions/Gender"
+        description: looking for
+  Image:
+    type: object
+    properties:
+      uuid:
+        type: string
+        description: uuid of the image
+      path:
+        type: string
+        description: path of the image
+  Gender:
+    type: object
+    properties:
+      id:
+        type: string
+        description: gender type
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
