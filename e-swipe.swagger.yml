@@ -1,36 +1,120 @@
-# this is an example of the Uber API
-# as a demonstration of an API spec in YAML
 swagger: '2.0'
 info:
   title: E-swipe
   description: Move your app forward with the Uber API
-  version: "1.0.0"
-# the domain of the service
-host: api.uber.com
-# array of all schemes that your API supports
+  version: 1.0.0
+host: api.stardis.blue
 schemes:
   - https
-# will be prefixed to all paths
 basePath: /v1
 produces:
   - application/json
 paths:
-  /profile:
+  /profiles:
     get:
-      summary: wow
+      summary: Get swipable users (per group of 10)
       parameters:
-        - name: uuid
+        - name: auth
           in: query
-          description: profile id
-          required: true
+          description: authentification
           type: string
+          required: true
+        - name: latitude
+          in: query
+          description: Latitude component of location.
+          required: true
+          type: number
+          format: double
+        - name: longitude
+          in: query
+          description: Longitude component of location.
+          required: true
+          type: number
+          format: double
+        - name: raduis
+          in: query
+          description: raduis of detection default is 10 max is 200
+          type: integer
+          minimum: 10
+          maximum: 200
       responses:
-        200:
-          description: An array of products
+        '200':
+          description: Product
           schema:
             type: array
             items:
-              $ref: '#/definitions/Profile'
+              $ref: '#/definitions/SwipeProfile'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - Profiles
+  /User/{uuid}:
+    get:
+      summary: get user
+      parameters:
+        - name: uuid
+          in: path
+          description: profile id
+          required: true
+          type: string
+        - name: auth
+          in: query
+          description: authentification
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Product
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User
+  /User/{uuid}/accept:
+    get:
+      summary: accept
+      parameters:
+        - name: uuid
+          in: path
+          description: profile id
+          required: true
+          type: string
+        - name: auth
+          in: query
+          description: authentification
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User
+  /User/{uuid}/decline:
+    get:
+      summary: refuse
+      parameters:
+        - name: uuid
+          in: path
+          description: profile id
+          required: true
+          type: string
+        - name: auth
+          in: query
+          description: authentification
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
         default:
           description: Unexpected error
           schema:
@@ -40,13 +124,73 @@ paths:
   /me:
     get:
       summary: user profile
+      parameters:
+        - name: auth
+          in: query
+          description: authentification
+          type: string
+          required: true
       responses:
-        200:
+        '200':
           description: test
           schema:
-            $ref: '#/definitions/Profile'
+            $ref: '#/definitions/User'
       tags:
         - User
+  /me/chats:
+    get:
+      summary: get all my chats$
+      parameters:
+        - name: auth
+          in: query
+          description: authentification
+          type: string
+          required: true
+      responses:
+        '200':
+          description: list of chats
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ShortChat'
+      tags:
+        - User
+  /chat/{uuid}:
+    get:
+      summary: chat
+      parameters:
+        - name: uuid
+          in: path
+          description: uuid of chat
+          type: string
+          required: true
+        - name: auth
+          in: query
+          description: authentification
+          type: string
+          required: true
+        - name: since
+          in: query
+          description: time last query (timestamp)
+          type: integer
+          default: 0
+        - name: offset
+          type: integer
+          in: query
+          description: offset of the results, default is 0
+        - name: limit
+          type: integer
+          in: query
+          description: raduis of detection default is 10 max is 200
+          minimum: 10
+          maximum: 200
+      responses:
+        '200':
+          description: all messages of chat ordered by last message
+          schema:
+            $ref: '#/definitions/Chat'
+      tags:
+        - Chat
   /events:
     get:
       summary: List of events
@@ -71,13 +215,15 @@ paths:
         - name: offset
           type: integer
           in: query
-          description: offset of the results, default is 0
+          description: 'offset of the results, default is 0'
         - name: limit
           type: integer
           in: query
-          description: number of results default is 20 max is 100
+          description: raduis of detection default is 10 max is 200
+          minimum: 10
+          maximum: 200
       responses:
-        200:
+        '200':
           description: an array of events
           schema:
             type: array
@@ -88,9 +234,103 @@ paths:
           schema:
             $ref: '#/definitions/Error'
       tags:
+        - Events
+  /chat/{uuid}/writemessage:
+    get:
+      summary: write message
+      description: Write a message in the chat
+      parameters:
+        - name: auth
+          in: query
+          description: authentification
+          type: string
+          required: true
+        - name: content
+          in: query
+          type: string
+          required: true
+          description: content of the message
+      tags:
+        - Chat
+  /event/{uuid}:
+    get:
+      summary: Get an event
+      description: get all the information about an event
+      parameters:
+        - name: uuid
+          in: path
+          description: event id
+          type: string
+          required: true
+        - name: auth
+          in: query
+          description: authentification
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Event
+          schema:
+            $ref: '#/definitions/Event'
+      tags:
         - Event
-        - User
+  /event/{uuid}/participate:
+    get:
+      summary: accept
+      parameters:
+        - name: uuid
+          in: path
+          description: event id
+          required: true
+          type: string
+        - name: auth
+          in: query
+          description: authentification
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - Event
+  /event/{uuid}/refuse:
+    get:
+      summary: Don't participate
+      parameters:
+        - name: uuid
+          in: path
+          description: event id
+          required: true
+          type: string
+        - name: auth
+          in: query
+          description: authentification
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - Event
 definitions:
+  ShortEvent:
+    type: object
+    properties:
+      uuid:
+        type: string
+      name:
+        type: string
+        description: name of the event
+      default_picture:
+        $ref: '#/definitions/Image/properties/path'
   Event:
     type: object
     properties:
@@ -102,13 +342,19 @@ definitions:
       description:
         type: string
         description: description of the event
+      default_picture:
+        $ref: '#/definitions/Image/properties/path'
       images:
         type: array
         items:
-          $ref: '#/definitions/Image'
+          $ref: '#/definitions/Image/properties/path'
         description: Images of the event
       localisation:
         $ref: '#/definitions/Localisation'
+      people:
+        type: array
+        items:
+          $ref: '#/definitions/ShortProfile'
       date_begin:
         type: string
       date_end:
@@ -122,11 +368,38 @@ definitions:
       longitude:
         type: number
         format: double
-  Profile:
+  SwipeProfile:
     type: object
     properties:
       uuid:
         type: string
+        description: id
+      first_name:
+        type: string
+      last_name:
+        type: string
+      age:
+        type: integer
+      default_picture:
+        $ref: '#/definitions/Image/properties/path'
+  ShortProfile:
+    type: object
+    properties:
+      uuid:
+        type: string
+        description: id
+      first_name:
+        type: string
+      last_name:
+        type: string
+      default_picture:
+        $ref: '#/definitions/Image/properties/path'
+  User:
+    type: object
+    properties:
+      uuid:
+        type: string
+        description: id
       first_name:
         type: string
       last_name:
@@ -139,21 +412,30 @@ definitions:
         type: string
       facebook_id:
         type: string
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/ShortEvent'
+      default_picture:
+        $ref: '#/definitions/Image/properties/path'
       pictures:
         type: array
         items:
-          $ref: "#/definitions/Image/properties/path"
-        description: Images of the profile.
+          $ref: '#/definitions/Image/properties/path'
+        description: images of the profile.
       genders:
         type: array
         items:
-          $ref: "#/definitions/Gender"
+          $ref: '#/definitions/Gender/properties/name'
         description: genders of the user
       looking_for:
         type: array
         items:
-          $ref: "#/definitions/Gender"
+          $ref: '#/definitions/Gender/properties/name'
         description: looking for
+      is_visible:
+        type: boolean
+        description: si le profil est visible
   Image:
     type: object
     properties:
@@ -162,13 +444,17 @@ definitions:
         description: uuid of the image
       path:
         type: string
-        description: path of the image
+        description: url of the image
   Gender:
     type: object
+    description: Gender
     properties:
       id:
         type: string
         description: gender type
+      name:
+        type: string
+        description: gender name
   Error:
     type: object
     properties:
@@ -178,4 +464,36 @@ definitions:
       message:
         type: string
       fields:
+        type: string
+  ShortChat:
+    type: object
+    description: Messagerie instantanée
+    properties:
+      uuid:
+        type: string
+      user:
+        $ref: '#/definitions/ShortProfile'
+      last_message:
+        $ref: '#/definitions/Message'
+  Chat:
+    type: object
+    description: Messagerie instantanée
+    properties:
+      uuid:
+        type: string
+      user:
+        $ref: '#/definitions/ShortProfile'
+      messages:
+        type: array
+        items:
+          $ref: '#/definitions/Message'
+  Message:
+    type: object
+    description: A message from Chat
+    properties:
+      sender:
+        $ref: '#/definitions/User/properties/uuid'
+      content:
+        type: string
+      date:
         type: string
