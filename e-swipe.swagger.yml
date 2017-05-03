@@ -9,6 +9,26 @@ schemes:
 basePath: /v1
 produces:
   - application/json
+security:
+  - oauth2: []
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: password
+    tokenUrl: 'http://localhost/oauth/login?redirect_uri=null'
+    scopes:
+      default: user access
+      email: get email
+  facebook_login:
+    type: apiKey
+    in: header
+    name: facebook_login
+  auth:
+    type: apiKey
+    in: header
+    name: auth
+  login:
+    type: basic
 
 # ============== #
 #=- PARAMETERS -=#
@@ -17,38 +37,38 @@ parameters:
   profileUUID:
     name: uuid
     in: path
-    description: 'UUID of an User'
+    description: UUID of an User
     required: true
     type: string
   chatUUID:
     name: uuid
     in: path
-    description: 'UUID of a Chat'
+    description: UUID of a Chat
     required: true
     type: string
   eventUUID:
     name: uuid
     in: path
-    description: 'UUID of an Event'
+    description: UUID of an Event
     required: true
     type: string
   auth:
     name: auth
     in: query
-    description: 'OAuth authentification token'
+    description: OAuth authentification token
     type: string
     required: true
   latitude:
     name: latitude
     in: query
-    description: 'Latitude'
+    description: Latitude
     required: true
     type: number
     format: double
   longitude:
     name: longitude
     in: query
-    description: 'Longitude'
+    description: Longitude
     required: true
     type: number
     format: double
@@ -79,13 +99,41 @@ parameters:
 #=- PATHS -=#
 # ================================== #
 paths:
+
   #=- User -=#
   # ========== #
+  /login/:
+    put:
+      summary: Classic Login
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Token'
+        '401':
+          description: bad login
+      tags:
+        - Login
+      security:
+        - login: []
+  /login/facebook:
+    put:
+      summary: facebook authentification
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Token'
+        '401':
+          description: bad login
+      tags:
+        - Login
+      security:
+        - facebook_login: []
   /user/:
     put:
       summary: Create a new user
       parameters:
-        - $ref: '#/parameters/auth'
         - name: user
           in: body
           required: true
@@ -247,6 +295,42 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
+  /me/interests:
+    get:
+      summary: get all my interests
+      parameters:
+        - $ref: '#/parameters/auth'
+      responses:
+        '200':
+          description: list of all my interests
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Interest/properties/name'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Profil
+    put:
+      summary: add interests
+      parameters:
+        - $ref: '#/parameters/auth'
+        - name: interests
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Interest/properties/name'
+      responses:
+        '201':
+          description: Created
+        '204':
+          description: No interest modified
+      tags:
+        - User - Profil
 
   #=- Chat -=#
   # ========== #
@@ -369,6 +453,23 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
+  '/event/{uuid}/tags':
+    get:
+      summary: returns all the tags of the event
+      parameters:
+        - $ref: '#/parameters/auth'
+        - $ref: '#/parameters/eventUUID'
+      responses:
+        '200':
+          description: list of tags of the event
+          schema:
+            $ref: '#/definitions/Event/properties/tags'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - Event
 
 # =============== #
 #=- DEFINITIONS -=#
@@ -404,6 +505,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/ShortProfile'
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Interest'
       date_begin:
         type: string
         format: date
@@ -420,7 +525,7 @@ definitions:
       uuid:
         $ref: '#/definitions/Event/properties/uuid'
       name:
-         $ref: '#/definitions/Event/properties/name'
+        $ref: '#/definitions/Event/properties/name'
       default_picture:
         $ref: '#/definitions/Image/properties/url'
 
@@ -571,6 +676,16 @@ definitions:
       longitude:
         type: number
         format: double
+  Interest:
+    type: object
+    required:
+      - uuid
+    properties:
+      uuid:
+        type: string
+        format: uuid
+      name:
+        type: string
 
   #=- Chat -=#
   # ======== #
@@ -624,3 +739,8 @@ definitions:
       date:
         type: string
         format: date
+  Token:
+    type: object
+    properties:
+      auth:
+        type: string
