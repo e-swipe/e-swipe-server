@@ -84,7 +84,7 @@ parameters:
     name: offset
     type: integer
     in: query
-    description: 'offset of the results (`default: 10`)'
+    description: 'offset of the results (`default: 0`)'
     default: 0
   limit:
     name: limit
