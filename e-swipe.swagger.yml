@@ -27,16 +27,25 @@ parameters:
     description: UUID of an User
     required: true
     type: string
+    format: uuid
   chatUUID:
     name: uuid
     in: path
     description: UUID of a Chat
     required: true
     type: string
+    format: uuid
   eventUUID:
     name: uuid
     in: path
     description: UUID of an Event
+    required: true
+    type: string
+    format: uuid
+  imageUUID:
+    name: uuid
+    in: path
+    description: UUID of the image
     required: true
     type: string
   auth:
@@ -116,6 +125,10 @@ paths:
             $ref: '#/definitions/Token'
         '401':
           description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
       tags:
         - Login
       security:
@@ -141,6 +154,10 @@ paths:
             $ref: '#/definitions/Token'
         '401':
           description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
       tags:
         - Login
       security:
@@ -151,6 +168,10 @@ paths:
       responses:
         '200':
           description: Success
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
       tags:
         - Login
   /user:
@@ -165,6 +186,8 @@ paths:
       responses:
         '201':
           description: Created
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -176,12 +199,13 @@ paths:
       summary: get user
       parameters:
         - $ref: '#/parameters/profileUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '200':
           description: Product
           schema:
             $ref: '#/definitions/User'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -192,7 +216,6 @@ paths:
     get:
       summary: Get swipable users (per group of 10)
       parameters:
-        - $ref: '#/parameters/auth'
         - $ref: '#/parameters/latitude'
         - $ref: '#/parameters/longitude'
         - $ref: '#/parameters/radius'
@@ -202,7 +225,9 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/SwipeProfile'
+              $ref: '#/definitions/ShortProfile'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -214,10 +239,11 @@ paths:
       summary: accept
       parameters:
         - $ref: '#/parameters/profileUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '204':
           description: Success
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -229,10 +255,11 @@ paths:
       summary: refuse
       parameters:
         - $ref: '#/parameters/profileUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '204':
           description: Success
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -242,13 +269,13 @@ paths:
   /me:
     get:
       summary: my profile
-      parameters:
-        - $ref: '#/parameters/auth'
       responses:
         '200':
-          description: success
+          description: test
           schema:
             $ref: '#/definitions/User'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -264,7 +291,6 @@ paths:
           - default_picture
           - if the profile is visible
       parameters:
-        - $ref: '#/parameters/auth'
         - name: user
           in: body
           schema:
@@ -272,6 +298,68 @@ paths:
       responses:
         '204':
           description: Success
+        '401':
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Profil
+    post:
+      deprecated: true
+      summary: update my profile, use PATCH instead
+      description: |
+        Used to update :
+          - email
+          - description
+          - default_picture
+          - if the profile is visible
+      parameters:
+        - name: user
+          in: body
+          schema:
+            $ref: '#/definitions/UserPatch'
+      responses:
+        '204':
+          description: Success
+        '401':
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Profil
+  /me/photo:
+    put:
+      summary: add a photo
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: photo
+          type: file
+          in: formData
+          description: image
+      responses:
+        '204':
+          description: Success
+        '401':
+          description: bad login
+    tags:
+      - User - Profil
+  /me/photo/{uuid}:
+    delete:
+      summary: delete
+      parameters:
+        - $ref: '#/parameters/imageUUID'
+      responses:
+        '204':
+          description: Success
+        '401':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
         default:
           description: Unexpected error
           schema:
@@ -282,7 +370,6 @@ paths:
     get:
       summary: get all my chats
       parameters:
-        - $ref: '#/parameters/auth'
         - $ref: '#/parameters/offset'
         - $ref: '#/parameters/limit'
       responses:
@@ -292,6 +379,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ShortChat'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -302,7 +391,6 @@ paths:
     get:
       summary: get my matches
       parameters:
-        - $ref: '#/parameters/auth'
         - $ref: '#/parameters/offset'
         - $ref: '#/parameters/limit'
       responses:
@@ -311,7 +399,9 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/SwipeProfile'
+              $ref: '#/definitions/ShortProfile'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -321,8 +411,6 @@ paths:
   /me/interests:
     get:
       summary: get all my interests
-      parameters:
-        - $ref: '#/parameters/auth'
       responses:
         '200':
           description: list of all my interests
@@ -330,6 +418,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Interest/properties/name'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -339,7 +429,6 @@ paths:
     put:
       summary: add interests
       parameters:
-        - $ref: '#/parameters/auth'
         - name: interests
           in: body
           required: true
@@ -352,6 +441,12 @@ paths:
           description: Created
         '204':
           description: No interest modified
+        '401':
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
       tags:
         - User - Profil
 
@@ -362,19 +457,20 @@ paths:
       summary: Get chat info
       parameters:
         - $ref: '#/parameters/chatUUID'
-        - $ref: '#/parameters/auth'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
         - name: since
           in: query
           description: time last query (timestamp)
           type: integer
           default: 0
-        - $ref: '#/parameters/offset'
-        - $ref: '#/parameters/limit'
       responses:
         '200':
           description: all messages of chat ordered by last message
           schema:
             $ref: '#/definitions/Chat'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -386,7 +482,6 @@ paths:
       description: Write a message in the chat
       parameters:
         - $ref: '#/parameters/chatUUID'
-        - $ref: '#/parameters/auth'
         - name: content
           in: query
           type: string
@@ -395,6 +490,8 @@ paths:
       responses:
         '200':
           description: Success
+        '401':
+          description: bad login
         default:
           description: Unexpected Error
           schema:
@@ -409,7 +506,6 @@ paths:
       summary: List of events
       description: Get all the events from a position
       parameters:
-        - $ref: '#/parameters/auth'
         - $ref: '#/parameters/latitude'
         - $ref: '#/parameters/longitude'
         - $ref: '#/parameters/radius'
@@ -422,6 +518,8 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Event'
+        '401':
+          description: bad login
         default:
           description: Unexpected Error
           schema:
@@ -434,12 +532,13 @@ paths:
       description: get all the information about an event
       parameters:
         - $ref: '#/parameters/eventUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '200':
           description: Event
           schema:
             $ref: '#/definitions/Event'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -451,10 +550,11 @@ paths:
       summary: accept
       parameters:
         - $ref: '#/parameters/eventUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '204':
           description: Success
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -466,10 +566,11 @@ paths:
       summary: Don't participate
       parameters:
         - $ref: '#/parameters/eventUUID'
-        - $ref: '#/parameters/auth'
       responses:
         '204':
           description: Success
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -480,13 +581,14 @@ paths:
     get:
       summary: returns all the tags of the event
       parameters:
-        - $ref: '#/parameters/auth'
         - $ref: '#/parameters/eventUUID'
       responses:
         '200':
           description: list of tags of the event
           schema:
             $ref: '#/definitions/Event/properties/tags'
+        '401':
+          description: bad login
         default:
           description: Unexpected error
           schema:
@@ -522,12 +624,12 @@ definitions:
         items:
           $ref: '#/definitions/Image'
         description: Images of the event
-      localisation:
-        $ref: '#/definitions/Localisation'
+      position:
+        $ref: '#/definitions/Position'
       people:
         type: array
         items:
-          $ref: '#/definitions/ShortProfile'
+          $ref: '#/definitions/ThumbProfile'
       tags:
         type: array
         items:
@@ -603,7 +705,7 @@ definitions:
       is_visible:
         type: boolean
         description: si le profil est visible
-  SwipeProfile:
+  ShortProfile:
     type: object
     readOnly: true
     properties:
@@ -617,7 +719,7 @@ definitions:
         $ref: '#/definitions/User/properties/date_of_birth'
       default_picture:
         $ref: '#/definitions/Image/properties/url'
-  ShortProfile:
+  ThumbProfile:
     type: object
     readOnly: true
     properties:
@@ -691,7 +793,7 @@ definitions:
         type: string
       fields:
         type: string
-  Localisation:
+  Position:
     type: object
     properties:
       latitude:
@@ -728,7 +830,7 @@ definitions:
         format: uuid
         description: Chat UUID
       user:
-        $ref: '#/definitions/ShortProfile'
+        $ref: '#/definitions/ThumbProfile'
       messages:
         type: array
         items:
@@ -746,7 +848,7 @@ definitions:
       uuid:
         $ref: '#/definitions/Image/properties/uuid'
       user:
-        $ref: '#/definitions/ShortProfile'
+        $ref: '#/definitions/ThumbProfile'
       last_message:
         $ref: '#/definitions/Message'
   Message:
