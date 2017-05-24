@@ -99,7 +99,7 @@ paths:
   #=- User -=#
   # ========== #
   /login/:
-    put:
+    post:
       summary: Classic Login
       parameters:
         - name: email
@@ -134,7 +134,7 @@ paths:
       security:
         []
   /login/facebook:
-    put:
+    post:
       summary: facebook authentification
       parameters:
         - name: facebook_auth
@@ -174,8 +174,8 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Login
-  /user:
-    put:
+  /users/:
+    post:
       summary: Create a new user
       parameters:
         - name: user
@@ -194,7 +194,29 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User
-  /user/{uuid}:
+    get:
+      deprecated: true
+      summary: Get swipable users (per group of 10) respecte la convention mais n'est pas le plus fidèle
+      parameters:
+        - $ref: '#/parameters/latitude'
+        - $ref: '#/parameters/longitude'
+        - $ref: '#/parameters/radius'
+      responses:
+        '200':
+          description: Product
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ShortProfile'
+        '401':
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Swipe
+  /users/{uuid}:
     get:
       summary: get user
       parameters:
@@ -234,7 +256,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Swipe
-  /user/{uuid}/accept:
+  /users/{uuid}/accept:
     post:
       summary: accept
       parameters:
@@ -250,7 +272,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Swipe
-  /user/{uuid}/decline:
+  /users/{uuid}/decline:
     post:
       summary: refuse
       parameters:
@@ -306,7 +328,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
-    post:
+    put:
       deprecated: true
       summary: update my profile, use PATCH instead
       description: |
@@ -331,8 +353,8 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
-  /me/photo:
-    put:
+  /me/photos:
+    post:
       summary: add a photo
       consumes:
         - multipart/form-data
@@ -346,9 +368,9 @@ paths:
           description: Success
         '401':
           description: bad login
-    tags:
-      - User - Profil
-  /me/photo/{uuid}:
+      tags:
+        - User - Profil
+  /me/photos/{uuid}:
     delete:
       summary: delete
       parameters:
@@ -427,7 +449,7 @@ paths:
       tags:
         - User - Profil
     put:
-      summary: add interests
+      summary: add interests or replace
       parameters:
         - name: interests
           in: body
@@ -452,7 +474,7 @@ paths:
 
   #=- Chat -=#
   # ========== #
-  /chat/{uuid}:
+  /chats/{uuid}:
     get:
       summary: Get chat info
       parameters:
@@ -526,7 +548,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
-  /event/{uuid}:
+  /events/{uuid}:
     get:
       summary: Get an event
       description: get all the information about an event
@@ -545,7 +567,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
-  /event/{uuid}/participate:
+  /events/{uuid}/participate:
     post:
       summary: accept
       parameters:
@@ -561,7 +583,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
-  /event/{uuid}/refuse:
+  /events/{uuid}/refuse:
     post:
       summary: Don't participate
       parameters:
@@ -577,7 +599,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
-  '/event/{uuid}/tags':
+  /events/{uuid}/tags:
     get:
       summary: returns all the tags of the event
       parameters:
