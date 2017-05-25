@@ -147,6 +147,11 @@ paths:
           required: true
           type: string
           description: Firebase Instance Id
+        - name: user
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UserFacebook'
       responses:
         '200':
           description: Success
@@ -182,7 +187,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/UserFacebookCreate'
+            $ref: '#/definitions/UserCreate'
       responses:
         '201':
           description: Created
@@ -207,7 +212,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/ShortProfile'
+              $ref: '#/definitions/UserCard'
         '401':
           description: bad login
         default:
@@ -247,7 +252,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/ShortProfile'
+              $ref: '#/definitions/UserCard'
         '401':
           description: bad login
         default:
@@ -353,6 +358,27 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
+  /me/password:
+    put:
+      summary: update password
+      parameters:
+        - name: password
+          in: query
+          type: string
+          format: password
+          required: true
+          description: new password
+      responses:
+        204:
+          description: Success
+        401:
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Profil
   /me/photos:
     post:
       summary: add a photo
@@ -364,12 +390,15 @@ paths:
           in: formData
           description: image
       responses:
-        '204':
+        '200':
           description: Success
+          schema:
+            $ref: '#/definitions/Image'
         '401':
           description: bad login
       tags:
         - User - Profil
+        - Photo
   /me/photos/{uuid}:
     delete:
       summary: delete
@@ -379,15 +408,36 @@ paths:
         '204':
           description: Success
         '401':
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          description: bad login
         default:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
+        - Photo
+  /me/photos/order:
+    put:
+      summary: change photo order
+      parameters:
+        - name: images
+          in: body
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ImageCard'
+      responses:
+        '204':
+          description: Success
+        '401':
+          description: bad login
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - User - Profil
+        - Photo
   /me/chats:
     get:
       summary: get all my chats
@@ -400,7 +450,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/ShortChat'
+              $ref: '#/definitions/ChatCard'
         '401':
           description: bad login
         default:
@@ -409,6 +459,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
+        - Chat
   /me/matches:
     get:
       summary: get my matches
@@ -421,7 +472,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/ShortProfile'
+              $ref: '#/definitions/UserCard'
         '401':
           description: bad login
         default:
@@ -539,7 +590,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Event'
+              $ref: '#/definitions/EventCard'
         '401':
           description: bad login
         default:
@@ -652,10 +703,10 @@ definitions:
         description: Images of the event
       position:
         $ref: '#/definitions/Position'
-      people:
-        type: array
-        items:
-          $ref: '#/definitions/ThumbProfile'
+      participants:
+        type: number
+        format: integer
+        description: number of people
       tags:
         type: array
         items:
@@ -666,8 +717,8 @@ definitions:
       date_end:
         type: string
         format: date
-  ShortEvent:
-    title: ShortEvent
+  EventCard:
+    title: EventCard
     type: object
     discriminator: uuid
     required:
@@ -678,10 +729,8 @@ definitions:
         $ref: '#/definitions/Event/properties/uuid'
       name:
         $ref: '#/definitions/Event/properties/name'
-      description:
-        $ref: '#/definitions/Event/properties/description'
       default_picture:
-        $ref: '#/definitions/Image/properties/url'
+        $ref: '#/definitions/Image'
       position:
         $ref: '#/definitions/Event/properties/position'
 
@@ -713,10 +762,6 @@ definitions:
         format: email
       facebook_id:
         type: string
-      events:
-        type: array
-        items:
-          $ref: '#/definitions/ShortEvent'
       default_picture:
         $ref: '#/definitions/Image'
       pictures:
@@ -724,11 +769,13 @@ definitions:
         description: images of the profile.
         items:
           $ref: '#/definitions/Image'
-      genders:
-        type: array
-        items:
-          $ref: '#/definitions/Gender/properties/name'
-        description: genders of the user
+#      genders:
+#        type: array
+#        items:
+#          $ref: '#/definitions/Gender/properties/name'
+#        description: genders of the user
+      gender:
+        $ref: '#/definitions/Gender/properties/name'
       looking_for:
         type: array
         items:
@@ -737,10 +784,11 @@ definitions:
       is_visible:
         type: boolean
         description: si le profil est visible
+        default: true
       position:
         $ref: '#/definitions/Position'
-  ShortProfile:
-    title: ShortProfile
+  UserCard:
+    title: UserCard
     type: object
     readOnly: true
     properties:
@@ -752,43 +800,42 @@ definitions:
         $ref: '#/definitions/User/properties/last_name'
       date_of_birth:
         $ref: '#/definitions/User/properties/date_of_birth'
-      default_picture:
+      picture_url:
         $ref: '#/definitions/Image/properties/url'
       position:
         $ref: '#/definitions/User/properties/position'
-  ThumbProfile:
-    title: ThumbProfile
-    type: object
-    readOnly: true
-    properties:
-      uuid:
-        $ref: '#/definitions/User/properties/uuid'
-      first_name:
-        $ref: '#/definitions/User/properties/first_name'
-      last_name:
-        $ref: '#/definitions/User/properties/last_name'
-      default_picture:
-        $ref: '#/definitions/Image/properties/url'
   UserPatch:
     title: UserPatch
     type: object
     properties:
+      first_name:
+        $ref: '#/definitions/User/properties/first_name'
+      last_name:
+        $ref: '#/definitions/User/properties/last_name'
+      date_of_birth:
+        $ref: '#/definitions/User/properties/date_of_birth'
       email:
         $ref: '#/definitions/User/properties/email'
       description:
         $ref: '#/definitions/User/properties/description'
+      gender:
+        $ref: '#/definitions/User/properties/gender'
       default_picture:
-        $ref: '#/definitions/Image'
+        $ref: '#/definitions/ImageCard'
+      looking_for:
+        $ref: '#/definitions/User/properties/looking_for'
       is_visible:
         $ref: '#/definitions/User/properties/is_visible'
-  UserFacebookCreate:
-    title: UserFacebookCreate
+  UserCreate:
+    title: UserCreate
     type: object
     required:
       - first_name
       - last_name
       - date_of_birth
-      - facebook_id
+      - gender
+      - email
+      - password
     properties:
       first_name:
         $ref: '#/definitions/User/properties/first_name'
@@ -798,8 +845,32 @@ definitions:
         $ref: '#/definitions/User/properties/date_of_birth'
       email:
         $ref: '#/definitions/User/properties/email'
-      facebook_id:
-        $ref: '#/definitions/User/properties/facebook_id'
+      gender:
+        $ref: '#/definitions/User/properties/gender'
+      password:
+        type: string
+        format: password
+        description: password of the user
+  UserFacebook:
+    title: UserFacebook
+    type: object
+    required:
+      - first_name
+      - last_name
+      - date_of_birth
+      - gender
+    properties:
+      first_name:
+        $ref: '#/definitions/User/properties/first_name'
+      last_name:
+        $ref: '#/definitions/User/properties/last_name'
+      date_of_birth:
+        $ref: '#/definitions/User/properties/date_of_birth'
+      gender:
+        $ref: '#/definitions/User/properties/gender'
+      email:
+        $ref: '#/definitions/User/properties/email'
+
 
   #=- Misc -=#
   # ======== #
@@ -814,6 +885,22 @@ definitions:
       url:
         type: string
         description: url of the image
+      order:
+        type: number
+        format: int
+        description: position de l'image
+  ImageCard:
+    title: ImageCard
+    type: object
+    properties:
+      uuid:
+        type: string
+        format: uuid
+        description: uuid of the image
+      order:
+        type: number
+        format: int
+        description: position de l'image
   Gender:
     title: Gender
     type: object
@@ -825,6 +912,7 @@ definitions:
       name:
         type: string
         description: gender name
+        example: "male"
   Error:
     title: Error
     type: object
@@ -843,9 +931,11 @@ definitions:
       latitude:
         type: number
         format: double
+        description: latitude
       longitude:
         type: number
         format: double
+        description: latitude
   Interest:
     title: Interest
     type: object
@@ -855,8 +945,10 @@ definitions:
       uuid:
         type: string
         format: uuid
+        description : interest uuid
       name:
         type: string
+        description: interest name
 
   #=- Chat -=#
   # ======== #
@@ -876,13 +968,13 @@ definitions:
         format: uuid
         description: Chat UUID
       user:
-        $ref: '#/definitions/ThumbProfile'
+        $ref: '#/definitions/UserCard'
       messages:
         type: array
         items:
           $ref: '#/definitions/Message'
-  ShortChat:
-    title: ShortChat
+  ChatCard:
+    title: ChatCard
     type: object
     description: Messagerie instantanée
     readOnly: true
@@ -895,7 +987,7 @@ definitions:
       uuid:
         $ref: '#/definitions/Image/properties/uuid'
       user:
-        $ref: '#/definitions/ThumbProfile'
+        $ref: '#/definitions/UserCard'
       last_message:
         $ref: '#/definitions/Message'
   Message:
@@ -905,6 +997,7 @@ definitions:
     required:
       - sender
       - content
+      - date
     properties:
       sender:
         $ref: '#/definitions/User/properties/uuid'
