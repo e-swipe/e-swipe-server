@@ -640,6 +640,9 @@ definitions:
       name:
         type: string
         description: name of the event
+      description:
+        type: string
+        description : description of the event
       default_picture:
         $ref: '#/definitions/Image'
       images:
@@ -675,8 +678,12 @@ definitions:
         $ref: '#/definitions/Event/properties/uuid'
       name:
         $ref: '#/definitions/Event/properties/name'
+      description:
+        $ref: '#/definitions/Event/properties/description'
       default_picture:
         $ref: '#/definitions/Image/properties/url'
+      position:
+        $ref: '#/definitions/Event/properties/position'
 
   #=- User -=#
   # ======== #
@@ -730,6 +737,8 @@ definitions:
       is_visible:
         type: boolean
         description: si le profil est visible
+      position:
+        $ref: '#/definitions/Position'
   ShortProfile:
     title: ShortProfile
     type: object
@@ -745,6 +754,8 @@ definitions:
         $ref: '#/definitions/User/properties/date_of_birth'
       default_picture:
         $ref: '#/definitions/Image/properties/url'
+      position:
+        $ref: '#/definitions/User/properties/position'
   ThumbProfile:
     title: ThumbProfile
     type: object
