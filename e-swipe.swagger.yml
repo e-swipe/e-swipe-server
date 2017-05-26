@@ -189,8 +189,10 @@ paths:
           schema:
             $ref: '#/definitions/UserCreate'
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/Token'
         '401':
           description: bad login
         default:
@@ -199,28 +201,6 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User
-    get:
-      deprecated: true
-      summary: Get swipable users (per group of 10) respecte la convention mais n'est pas le plus fidèle
-      parameters:
-        - $ref: '#/parameters/latitude'
-        - $ref: '#/parameters/longitude'
-        - $ref: '#/parameters/radius'
-      responses:
-        '200':
-          description: Product
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/UserCard'
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - User - Swipe
   /users/{uuid}:
     get:
       summary: get user
@@ -239,7 +219,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User
-  /profiles:
+  /profils:
     get:
       summary: Get swipable users (per group of 10)
       parameters:
@@ -300,7 +280,7 @@ paths:
         '200':
           description: test
           schema:
-            $ref: '#/definitions/User'
+            $ref: '#/definitions/UserInfo'
         '401':
           description: bad login
         default:
@@ -311,31 +291,6 @@ paths:
         - User - Profil
     patch:
       summary: update my profile
-      description: |
-        Used to update :
-          - email
-          - description
-          - default_picture
-          - if the profile is visible
-      parameters:
-        - name: user
-          in: body
-          schema:
-            $ref: '#/definitions/UserPatch'
-      responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - User - Profil
-    put:
-      deprecated: true
-      summary: update my profile, use PATCH instead
       description: |
         Used to update :
           - email
@@ -398,7 +353,7 @@ paths:
           description: bad login
       tags:
         - User - Profil
-        - Photo
+        - User - Photo
   /me/photos/{uuid}:
     delete:
       summary: delete
@@ -415,7 +370,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
-        - Photo
+        - User - Photo
   /me/photos/order:
     put:
       summary: change photo order
@@ -437,7 +392,7 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
-        - Photo
+        - User - Photo
   /me/chats:
     get:
       summary: get all my chats
@@ -459,69 +414,27 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - User - Profil
-        - Chat
-  /me/matches:
-    get:
-      summary: get my matches
-      parameters:
-        - $ref: '#/parameters/offset'
-        - $ref: '#/parameters/limit'
-      responses:
-        '200':
-          description: list of profils
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/UserCard'
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - User - Profil
-  /me/interests:
-    get:
-      summary: get all my interests
-      responses:
-        '200':
-          description: list of all my interests
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Interest/properties/name'
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - User - Profil
-    put:
-      summary: add interests or replace
-      parameters:
-        - name: interests
-          in: body
-          required: true
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Interest/properties/name'
-      responses:
-        '201':
-          description: Created
-        '204':
-          description: No interest modified
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - User - Profil
+#  /me/matches:
+#    get:
+#      summary: get my matches
+#      parameters:
+#        - $ref: '#/parameters/offset'
+#        - $ref: '#/parameters/limit'
+#      responses:
+#        '200':
+#          description: list of profils
+#          schema:
+#            type: array
+#            items:
+#              $ref: '#/definitions/UserCard'
+#        '401':
+#          description: bad login
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+#      tags:
+#        - User - Profil
 
   #=- Chat -=#
   # ========== #
@@ -555,14 +468,14 @@ paths:
       description: Write a message in the chat
       parameters:
         - $ref: '#/parameters/chatUUID'
-        - name: content
-          in: query
-          type: string
-          required: true
-          description: content of the message
+        - name: message
+          in: body
+          schema:
+            $ref: '#/definitions/Message'
+
       responses:
-        '200':
-          description: Success
+        '201':
+          description: created
         '401':
           description: bad login
         default:
@@ -650,24 +563,6 @@ paths:
             $ref: '#/definitions/Error'
       tags:
         - Event
-  /events/{uuid}/tags:
-    get:
-      summary: returns all the tags of the event
-      parameters:
-        - $ref: '#/parameters/eventUUID'
-      responses:
-        '200':
-          description: list of tags of the event
-          schema:
-            $ref: '#/definitions/Event/properties/tags'
-        '401':
-          description: bad login
-        default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-      tags:
-        - Event
 
 # =============== #
 #=- DEFINITIONS -=#
@@ -681,8 +576,6 @@ definitions:
     type: object
     description: Event
     discriminator: uuid
-    required:
-      - uuid
     properties:
       uuid:
         type: string
@@ -694,8 +587,6 @@ definitions:
       description:
         type: string
         description : description of the event
-      default_picture:
-        $ref: '#/definitions/Image'
       images:
         type: array
         items:
@@ -707,37 +598,37 @@ definitions:
         type: number
         format: integer
         description: number of people
-      tags:
+      interests:
         type: array
         items:
           $ref: '#/definitions/Interest'
       date_begin:
         type: string
-        format: date
+        format: datetime
       date_end:
         type: string
-        format: date
+        format: datetime
+      participating:
+        type: boolean
+        description: "true if is participating"
   EventCard:
     title: EventCard
     type: object
-    discriminator: uuid
-    required:
-      - uuid
     readOnly: true
     properties:
       uuid:
         $ref: '#/definitions/Event/properties/uuid'
       name:
         $ref: '#/definitions/Event/properties/name'
-      default_picture:
-        $ref: '#/definitions/Image'
+      picture_url:
+        $ref: '#/definitions/Image/properties/url'
       position:
         $ref: '#/definitions/Event/properties/position'
 
   #=- User -=#
   # ======== #
-  User:
-    title: User
+  UserInfo:
+    title: UserInfo
     type: object
     discriminator: uuid
     required:
@@ -757,23 +648,13 @@ definitions:
         format: date
       description:
         type: string
-      email:
-        type: string
-        format: email
-      facebook_id:
-        type: string
-      default_picture:
-        $ref: '#/definitions/Image'
-      pictures:
-        type: array
-        description: images of the profile.
-        items:
-          $ref: '#/definitions/Image'
-#      genders:
-#        type: array
-#        items:
-#          $ref: '#/definitions/Gender/properties/name'
-#        description: genders of the user
+      picture_url:
+        $ref: '#/definitions/Image/properties/url'
+      #genders:
+      #  type: array
+      #  items:
+      #    $ref: '#/definitions/Gender/properties/name'
+      #  description: genders of the user
       gender:
         $ref: '#/definitions/Gender/properties/name'
       looking_for:
@@ -781,12 +662,58 @@ definitions:
         items:
           $ref: '#/definitions/Gender/properties/name'
         description: looking for
+      looking_for_age_min:
+        type: number
+        format: int
+        minimum: 18
+        maximum: 100
+        default: "age+10"
+      looking_for_age_max:
+        type: number
+        format: int
+        minimum: 18
+        maximum: 100
+        default: "age-10"
       is_visible:
         type: boolean
         description: si le profil est visible
         default: true
       position:
         $ref: '#/definitions/Position'
+  User:
+    title: User
+    type: object
+    discriminator: uuid
+    required:
+      - uuid
+    readOnly: true
+    properties:
+      uuid:
+        $ref: '#/definitions/UserInfo/properties/uuid'
+      first_name:
+        $ref: '#/definitions/UserInfo/properties/first_name'
+      last_name:
+        $ref: '#/definitions/UserInfo/properties/last_name'
+      date_of_birth:
+        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+      description:
+        $ref: '#/definitions/UserInfo/properties/description'
+      #genders:
+        #$ref: '#/definitions/UserInfo/properties/genders'
+      gender:
+        $ref: '#/definitions/UserInfo/properties/gender'
+      position:
+        $ref: '#/definitions/UserInfo/properties/position'
+      pictures:
+        type: array
+        description: images of the profile.
+        items:
+          $ref: '#/definitions/Image'
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/EventCard'
+        description: events of the user
   UserCard:
     title: UserCard
     type: object
@@ -809,23 +736,26 @@ definitions:
     type: object
     properties:
       first_name:
-        $ref: '#/definitions/User/properties/first_name'
+        $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
-        $ref: '#/definitions/User/properties/last_name'
+        $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/User/properties/date_of_birth'
-      email:
-        $ref: '#/definitions/User/properties/email'
+        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+      #email:
+      #  type: string
+      #  format: email
       description:
-        $ref: '#/definitions/User/properties/description'
+        $ref: '#/definitions/UserInfo/properties/description'
       gender:
-        $ref: '#/definitions/User/properties/gender'
-      default_picture:
-        $ref: '#/definitions/ImageCard'
+        $ref: '#/definitions/UserInfo/properties/gender'
       looking_for:
-        $ref: '#/definitions/User/properties/looking_for'
+        $ref: '#/definitions/UserInfo/properties/looking_for'
+      looking_for_age_min:
+        $ref: '#/definitions/UserInfo/properties/looking_for_age_min'
+      looking_for_age_max:
+        $ref: '#/definitions/UserInfo/properties/looking_for_age_max'
       is_visible:
-        $ref: '#/definitions/User/properties/is_visible'
+        $ref: '#/definitions/UserInfo/properties/is_visible'
   UserCreate:
     title: UserCreate
     type: object
@@ -838,15 +768,16 @@ definitions:
       - password
     properties:
       first_name:
-        $ref: '#/definitions/User/properties/first_name'
+        $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
-        $ref: '#/definitions/User/properties/last_name'
+        $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/User/properties/date_of_birth'
-      email:
-        $ref: '#/definitions/User/properties/email'
+        $ref: '#/definitions/UserInfo/properties/date_of_birth'
       gender:
-        $ref: '#/definitions/User/properties/gender'
+        $ref: '#/definitions/UserInfo/properties/gender'
+      email:
+        type: string
+        format: email
       password:
         type: string
         format: password
@@ -861,15 +792,16 @@ definitions:
       - gender
     properties:
       first_name:
-        $ref: '#/definitions/User/properties/first_name'
+        $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
-        $ref: '#/definitions/User/properties/last_name'
+        $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/User/properties/date_of_birth'
+        $ref: '#/definitions/UserInfo/properties/date_of_birth'
       gender:
-        $ref: '#/definitions/User/properties/gender'
+        $ref: '#/definitions/UserInfo/properties/gender'
       email:
-        $ref: '#/definitions/User/properties/email'
+        type: string
+        format: email
 
 
   #=- Misc -=#
@@ -935,7 +867,7 @@ definitions:
       longitude:
         type: number
         format: double
-        description: latitude
+        description: longitude
   Interest:
     title: Interest
     type: object
@@ -958,10 +890,6 @@ definitions:
     description: Messagerie instantanée
     readOnly: true
     discriminator: uuid
-    required:
-      - uuid
-      - user
-      - messages
     properties:
       uuid:
         type: string
@@ -969,6 +897,8 @@ definitions:
         description: Chat UUID
       user:
         $ref: '#/definitions/UserCard'
+      last_message_content:
+        $ref: '#/definitions/Message/properties/content'
       messages:
         type: array
         items:
@@ -982,24 +912,24 @@ definitions:
     required:
       - uuid
       - user
-      - last_message
+      - last_message_content
     properties:
       uuid:
         $ref: '#/definitions/Image/properties/uuid'
       user:
         $ref: '#/definitions/UserCard'
-      last_message:
-        $ref: '#/definitions/Message'
+      last_message_content:
+        $ref: '#/definitions/Message/properties/content'
   Message:
     title: Message
     type: object
     description: A message from Chat
     required:
-      - sender
+      - user_id
       - content
       - date
     properties:
-      sender:
+      user_id:
         $ref: '#/definitions/User/properties/uuid'
       content:
         type: string
