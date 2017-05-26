@@ -188,7 +188,11 @@ paths:
           description: Success
           schema:
             $ref: '#/definitions/Token'
-        '401':
+        201:
+          description: Success
+          schema:
+            $ref: '#/definitions/Token'
+        401:
           $ref: '#/responses/401'
         422:
           $ref: '#/responses/422'
@@ -389,6 +393,22 @@ paths:
       tags:
         - User - Profil
         - User - Photo
+    get:
+      summary: Get phootos
+      responses:
+        201:
+          description: list of photos
+          schema:
+            $ref: '#/definitions/Image'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
+        default:
+          $ref: '#/responses/default'
+      tags:
+        - User - Profil
+        - User - Photo
   /me/photos/{uuid}:
     delete:
       summary: delete
@@ -462,7 +482,7 @@ paths:
   #          type: array
   #          items:
   #            $ref: '#/definitions/UserCard'
-  #      '401':
+  #      401:
   #        description: bad login
   #      default:
   #        description: Unexpected error
@@ -714,6 +734,16 @@ definitions:
         default: true
       position:
         $ref: '#/definitions/Position'
+      pictures:
+        type: array
+        description: images of the profile.
+        items:
+          $ref: '#/definitions/Image'
+      events:
+        type: array
+        items:
+          $ref: '#/definitions/EventCard'
+        description: events of the user
   User:
     title: User
     type: object
@@ -739,32 +769,26 @@ definitions:
       position:
         $ref: '#/definitions/UserInfo/properties/position'
       pictures:
-        type: array
-        description: images of the profile.
-        items:
-          $ref: '#/definitions/Image'
+        $ref: '#/definitions/UserInfo/properties/pictures'
       events:
-        type: array
-        items:
-          $ref: '#/definitions/EventCard'
-        description: events of the user
+        $ref: '#/definitions/UserInfo/properties/events'
   UserCard:
     title: UserCard
     type: object
     readOnly: true
     properties:
       uuid:
-        $ref: '#/definitions/User/properties/uuid'
+        $ref: '#/definitions/UserInfo/properties/uuid'
       first_name:
-        $ref: '#/definitions/User/properties/first_name'
+        $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
-        $ref: '#/definitions/User/properties/last_name'
+        $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/User/properties/date_of_birth'
+        $ref: '#/definitions/UserInfo/properties/date_of_birth'
       picture_url:
-        $ref: '#/definitions/Image/properties/url'
+        $ref: '#/definitions/UserInfo/properties/picture_url'
       position:
-        $ref: '#/definitions/User/properties/position'
+        $ref: '#/definitions/UserInfo/properties/position'
   UserPatch:
     title: UserPatch
     type: object
