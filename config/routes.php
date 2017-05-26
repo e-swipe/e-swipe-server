@@ -19,9 +19,9 @@
  */
 
 use Cake\Core\Plugin;
+use Cake\Routing\Route\DashedRoute;
 use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
-use Cake\Routing\Route\DashedRoute;
 
 /**
  * The default class to use for all routes
@@ -42,7 +42,7 @@ use Cake\Routing\Route\DashedRoute;
  *
  */
 Router::defaultRouteClass(DashedRoute::class);
-
+Router::extensions(['json', 'xml']);
 Router::scope('/', function (RouteBuilder $routes) {
     /**
      * Here, we are connecting '/' (base path) to a controller called 'Pages',
@@ -74,6 +74,59 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->fallbacks(DashedRoute::class);
 });
+
+Router::scope('/v1', function (RouteBuilder $routes) {
+    $routes->connect('/login', ['controller' => 'Login', 'action' => 'basic', /*'_method' => 'POST'*/]);
+    $routes->connect('/login/facebook', ['controller' => 'Login', 'action' => 'facebookLogin', '_method' => 'POST']);
+    $routes->connect('/logout', ['controller' => 'Login', 'action' => 'logout', '_method' => 'GET']);
+
+
+    $routes->connect('/profils', ['controller' => 'Users', 'action' => 'index', '_method' => 'GET']);
+    $routes->connect('/users', ['controller' => 'Users', 'action' => 'add', '_method' => 'POST']);
+    $routes->connect('/users/:uuid',
+        ['controller' => 'Users', 'action' => 'get', '_method' => 'GET'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/users/:uuid/accept',
+        ['controller' => 'Users', 'action' => 'accept', '_method' => 'POST'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/users/:uuid/decline',
+        ['controller' => 'Users', 'action' => 'decline', '_method' => 'POST'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+
+
+    $routes->connect('/me', ['controller' => 'ConnectedUser', 'action' => 'get', '_method' => 'GET']);
+    $routes->connect('/me', ['controller' => 'ConnectedUser', 'action' => 'update', '_method' => 'PATCH']);
+    $routes->connect('/me/password', ['controller' => 'ConnectedUser', 'action' => 'changePassword', '_method' => 'PUT']);
+
+    $routes->connect('/me/photos', ['controller' => 'ConnectedUser', 'action' => 'addPhoto', '_method' => 'POST']);
+    $routes->connect('/me/photos/:uuid',
+        ['controller' => 'ConnectedUser', 'action' => 'deletePhoto', '_method' => 'DELETE'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/me/photos',
+        ['controller' => 'ConnectedUser', 'action' => 'updatePhotosOrder', '_method' => 'PUT']);
+
+    $routes->connect('/me/chats', ['controller' => 'ConnectedUser', 'action' => 'getChats', '_method' => 'GET']);
+
+
+    $routes->connect('/chats/:uuid',
+        ['controller' => 'Chats', 'action' => 'get', '_method' => 'GET'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/chats/:uuid',
+        ['controller' => 'Chats', 'action' => 'addMessage', '_method' => 'POST'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+
+
+    $routes->connect('/events', ['controller' => 'Events', 'action' => 'index', '_method' => 'GET']);
+    $routes->connect('/events/:uuid', ['controller' => 'Events', 'action' => 'get', '_method' => 'GET'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/events/:uuid/participate',
+        ['controller' => 'Events', 'action' => 'participate', '_method' => 'POST'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+    $routes->connect('/events/:uuid/decline',
+        ['controller' => 'Events', 'action' => 'decline', '_method' => 'POST'],
+        ['uuid' => '[0-9a-zA-Z]+']);
+});
+
 
 /**
  * Load all plugin routes. See the Plugin documentation on

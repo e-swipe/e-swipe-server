@@ -277,18 +277,18 @@ CREATE TABLE IF NOT EXISTS `events_interests` (
 -- -----------------------------------------------------
 -- Table `chats_users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `chats_users`;
+DROP TABLE IF EXISTS `chats_users_messages`;
 
-CREATE TABLE IF NOT EXISTS `chats_users` (
-    `message_id` INT UNSIGNED NOT NULL,
+CREATE TABLE IF NOT EXISTS `chats_users_messages` (
+    `id` INT UNSIGNED NOT NULL,
     `chat_id`    INT UNSIGNED NOT NULL,
     `user_id`    INT UNSIGNED NOT NULL,
     `content`    TEXT         NOT NULL,
     `created_at` DATETIME     NOT NULL,
-    PRIMARY KEY (`message_id`, `chat_id`, `user_id`),
+    PRIMARY KEY (`id`, `chat_id`, `user_id`),
     INDEX `fk_chat_has_users_users1_idx` (`user_id` ASC),
     INDEX `fk_chat_has_users_chat1_idx` (`chat_id` ASC),
-    UNIQUE INDEX `message_id_UNIQUE` (`message_id` ASC),
+    UNIQUE INDEX `id_UNIQUE` (`id` ASC),
     INDEX `date_sort` (`chat_id` ASC, `created_at` DESC),
     FOREIGN KEY (`chat_id`)
     REFERENCES `chat` (`id`)
