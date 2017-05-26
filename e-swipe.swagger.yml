@@ -94,6 +94,37 @@ parameters:
 # ========= #
 #=- PATHS -=#
 # ================================== #
+responses:
+  200: # changé à chaque fois
+    description: 'SUCCESS: OK'
+  201: # souvent changé
+    description: 'SUCCESS: Created'
+  204:
+    description: 'SUCCESS: No Content'
+  401:
+    description: 'FAIL: Unauthorized'
+  422:
+    description: 'FAIL: incorrect parameters'
+    schema:
+      title: FieldError
+      type: object
+      properties:
+        code:
+          type: integer
+        field:
+          type: string
+        message:
+          type: string
+  default:
+    description: Unexpected error
+    schema:
+      $ref: '#/definitions/Error'
+
+
+
+# ========= #
+#=- PATHS -=#
+# ================================== #
 paths:
 
   #=- User -=#
@@ -119,16 +150,16 @@ paths:
           type: string
           description: Firebase Instance Id
       responses:
-        '200':
+        200:
           description: Success
           schema:
             $ref: '#/definitions/Token'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Login
       security:
@@ -153,16 +184,16 @@ paths:
           schema:
             $ref: '#/definitions/UserFacebook'
       responses:
-        '200':
+        200:
           description: Success
           schema:
             $ref: '#/definitions/Token'
         '401':
-          description: bad login
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Login
       security:
@@ -171,12 +202,12 @@ paths:
     get:
       summary: logout from application
       responses:
-        '200':
+        200:
           description: Success
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Login
   /users/:
@@ -189,16 +220,16 @@ paths:
           schema:
             $ref: '#/definitions/UserCreate'
       responses:
-        '200':
-          description: Success
+        201:
+          description: created
           schema:
             $ref: '#/definitions/Token'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User
   /users/{uuid}:
@@ -207,16 +238,16 @@ paths:
       parameters:
         - $ref: '#/parameters/profileUUID'
       responses:
-        '200':
+        200:
           description: Product
           schema:
             $ref: '#/definitions/User'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User
   /profils:
@@ -227,18 +258,18 @@ paths:
         - $ref: '#/parameters/longitude'
         - $ref: '#/parameters/radius'
       responses:
-        '200':
+        200:
           description: Product
           schema:
             type: array
             items:
               $ref: '#/definitions/UserCard'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Swipe
   /users/{uuid}/accept:
@@ -247,14 +278,14 @@ paths:
       parameters:
         - $ref: '#/parameters/profileUUID'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Swipe
   /users/{uuid}/decline:
@@ -263,30 +294,30 @@ paths:
       parameters:
         - $ref: '#/parameters/profileUUID'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Swipe
   /me:
     get:
       summary: my profile
       responses:
-        '200':
-          description: test
+        200:
+          description: Success
           schema:
             $ref: '#/definitions/UserInfo'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
     patch:
@@ -303,14 +334,14 @@ paths:
           schema:
             $ref: '#/definitions/UserPatch'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
   /me/password:
@@ -325,13 +356,13 @@ paths:
           description: new password
       responses:
         204:
-          description: Success
+          $ref: '#/responses/204'
         401:
-          description: bad login
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
   /me/photos:
@@ -345,12 +376,16 @@ paths:
           in: formData
           description: image
       responses:
-        '200':
-          description: Success
+        201:
+          description: CREATED
           schema:
             $ref: '#/definitions/Image'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
+        default:
+          $ref: '#/responses/default'
       tags:
         - User - Profil
         - User - Photo
@@ -360,14 +395,14 @@ paths:
       parameters:
         - $ref: '#/parameters/imageUUID'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
         - User - Photo
@@ -382,14 +417,14 @@ paths:
             items:
               $ref: '#/definitions/ImageCard'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
         - User - Photo
@@ -400,41 +435,41 @@ paths:
         - $ref: '#/parameters/offset'
         - $ref: '#/parameters/limit'
       responses:
-        '200':
+        200:
           description: list of chats
           schema:
             type: array
             items:
               $ref: '#/definitions/ChatCard'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - User - Profil
-#  /me/matches:
-#    get:
-#      summary: get my matches
-#      parameters:
-#        - $ref: '#/parameters/offset'
-#        - $ref: '#/parameters/limit'
-#      responses:
-#        '200':
-#          description: list of profils
-#          schema:
-#            type: array
-#            items:
-#              $ref: '#/definitions/UserCard'
-#        '401':
-#          description: bad login
-#        default:
-#          description: Unexpected error
-#          schema:
-#            $ref: '#/definitions/Error'
-#      tags:
-#        - User - Profil
+  #/me/matches:
+  #  get:
+  #    summary: get my matches
+  #    parameters:
+  #      - $ref: '#/parameters/offset'
+  #      - $ref: '#/parameters/limit'
+  #    responses:
+  #      200:
+  #        description: list of profils
+  #        schema:
+  #          type: array
+  #          items:
+  #            $ref: '#/definitions/UserCard'
+  #      '401':
+  #        description: bad login
+  #      default:
+  #        description: Unexpected error
+  #        schema:
+  #          $ref: '#/definitions/Error'
+  #    tags:
+  #      - User - Profil
 
   #=- Chat -=#
   # ========== #
@@ -451,16 +486,16 @@ paths:
           type: integer
           default: 0
       responses:
-        '200':
+        200:
           description: all messages of chat ordered by last message
           schema:
             $ref: '#/definitions/Chat'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Chat
     post:
@@ -472,16 +507,15 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/Message'
-
       responses:
-        '201':
-          description: created
-        '401':
-          description: bad login
+        201:
+          $ref: '#/responses/201'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected Error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Chat
 
@@ -498,18 +532,18 @@ paths:
         - $ref: '#/parameters/offset'
         - $ref: '#/parameters/limit'
       responses:
-        '200':
+        200:
           description: an array of events
           schema:
             type: array
             items:
               $ref: '#/definitions/EventCard'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected Error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Event
   /events/{uuid}:
@@ -519,16 +553,16 @@ paths:
       parameters:
         - $ref: '#/parameters/eventUUID'
       responses:
-        '200':
+        200:
           description: Event
           schema:
             $ref: '#/definitions/Event'
-        '401':
-          description: bad login
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Event
   /events/{uuid}/participate:
@@ -537,14 +571,14 @@ paths:
       parameters:
         - $ref: '#/parameters/eventUUID'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Event
   /events/{uuid}/refuse:
@@ -553,14 +587,14 @@ paths:
       parameters:
         - $ref: '#/parameters/eventUUID'
       responses:
-        '204':
-          description: Success
-        '401':
-          description: bad login
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
+        422:
+          $ref: '#/responses/422'
         default:
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+          $ref: '#/responses/default'
       tags:
         - Event
 
