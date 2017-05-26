@@ -383,7 +383,9 @@ paths:
         201:
           description: CREATED
           schema:
-            $ref: '#/definitions/Image'
+            type: array
+            items:
+              $ref: '#/definitions/Image'
         401:
           $ref: '#/responses/401'
         422:
