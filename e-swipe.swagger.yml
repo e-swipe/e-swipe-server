@@ -3,9 +3,9 @@ info:
   title: E-swipe
   description: Move your life forward with the E-swipe app
   version: 1.0.0
-host: localhost:8765
+host: api.stardis.blue
 schemes:
-  - http
+  - https
 basePath: /v1
 produces:
   - application/json
@@ -103,6 +103,8 @@ responses:
     description: 'SUCCESS: No Content'
   401:
     description: 'FAIL: Unauthorized'
+  404:
+    description: 'FAIL: Not Found'
   409:
     description: 'FAIL: Conflict'
   422:
@@ -212,6 +214,8 @@ paths:
           $ref: '#/responses/204'
         401:
           $ref: '#/responses/401'
+        404:
+          $ref: '#/responses/404'
         default:
           $ref: '#/responses/default'
       tags:
