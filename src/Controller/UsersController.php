@@ -7,7 +7,7 @@ use App\Model\Entity\User;
 use App\Model\Table\GendersTable;
 use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
-use App\Network\exception\UnprocessedEntityException;
+use App\Network\Exception\UnprocessedEntityException;
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
 use Cake\Network\Exception\ConflictException;
@@ -44,14 +44,15 @@ class UsersController extends ApiV1Controller
             throw new UnauthorizedException();
         }
 
-        var_dump($auth);
-
         $this->Sessions->delete($session);
 
         $response = $this->response->withStatus(204);
         return $response;
     }
 
+    /**
+     * @return
+     */
     public function add()
     {
         $instanceId = $this->request->getQuery('instance_id');
@@ -60,12 +61,7 @@ class UsersController extends ApiV1Controller
 
         if (empty($userData)) {
             throw new UnprocessedEntityException('incorrect data');
-        }
-
-        if (!is_string($instanceId) || strlen($instanceId) > 250) {
-            $message = 'unauthorized "instance_id" type';
-        } else if (!is_string($instanceId)
-            || strlen($instanceId) > 250
+        } else if (!is_string($instanceId) || strlen($instanceId) > 250
         ) {
             throw new UnprocessedEntityException('unexpected "instance_id"');
         } else if (!array_key_exists('last_name', $userData)
@@ -106,8 +102,9 @@ class UsersController extends ApiV1Controller
         $this->loadModel('Genders');
         $this->loadModel('Sessions');
 
-        $gender =
-
+        if ($this->Users->findByEmail($userData['email'])->first()) {
+            throw new ConflictException('user already exists');
+        }
 
         $user = $this->Users->newEntity();
         $user->firstname = $userData['first_name'];
@@ -123,10 +120,6 @@ class UsersController extends ApiV1Controller
         $session = $this->Sessions->newEntity();
         $session->uuid = Text::uuid();
         $session->user = $this->Users->save($user);
-
-        if (!$session->user) {
-            throw new ConflictException('user already exists');
-        }
 
         $this->Sessions->save($session);
 

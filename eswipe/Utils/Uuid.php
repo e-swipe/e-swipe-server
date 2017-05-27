@@ -14,7 +14,7 @@ class Uuid
 {
     public static function toByte($uuid)
     {
-        $uuid = utf8_encode(Text::slug($uuid));
+        $uuid = Text::slug($uuid);
         return pack("h*", str_replace('-', '', $uuid));
 
     }
