@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Http\JsonBodyResponse;
 use App\Model\Entity\User;
-use App\Network\exception\UnprocessedEntityException;
+use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;

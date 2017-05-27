@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Network\exception;
+namespace App\Network\Exception;
 
 use Cake\Network\Exception\HttpException;
 
