@@ -5,19 +5,22 @@ namespace App\Controller;
 use App\Http\JsonBodyResponse;
 use App\Model\Entity\User;
 use App\Network\exception\UnprocessedEntityException;
+use App\Validator\DataValidator;
 use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
 use Cake\Http\Client;
+use Cake\I18n\FrozenDate;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Utility\Security;
 use Cake\Utility\Text;
 use Cake\Validation\Validation;
-use Eswipe\Model\FieldError;
 use Eswipe\Model\Token;
 
 /**
  *
  * @property \App\Model\Table\UsersTable $Users
  * @property \App\Model\Table\SessionsTable $Sessions
+ * @property \App\Model\Table\SessionsTable Genders
  */
 class LoginController extends AppController
 {
@@ -81,32 +84,85 @@ class LoginController extends AppController
      */
     public function facebook()
     {
-        //TODO
+        $this->loadModel('Users');
+        $this->loadModel('Genders');
+        $this->loadModel('Sessions');
 
-        /*$facebook_auth = $this->request->getQuery('facebook_auth');
+        $facebookAuth = $this->request->getQuery('facebook_auth');
         $instanceId = $this->request->getQuery('instance_id');
+        $userData = $this->request->getData();
+        $accessToken = Configure::read('facebook.id') . "|" . Configure::read('facebook.key');
 
-        //TODO
-        debug($facebook_auth);
-        debug(Configure::read('facebook.key'));
+        $message = DataValidator::validateLoginFacebook($this->request);
+        if (!is_null($message)) {
+            throw new UnprocessedEntityException($message);
+        }
 
-        $client = new Client();
-        $answer = $client->get('https://graph.facebook.com/debug_token', ['
-        input_token' => $facebook_auth, 'access_token' => Configure::read('facebook.key')]);
+        $answer = (new Client())->get('https://graph.facebook.com/debug_token',
+            ['input_token' => $facebookAuth, 'access_token' => $accessToken]);
 
-        debug($answer);
-        debug($this->request->getData());
-        $user = $this->request->getData();
-        /*
-         * (
-                [first_name] => string
-                [last_name] => string
-                [date_of_birth] => string
-                [gender] => male
-                [email] => user@example.com
-            )
+        $facebookData = $answer->json;
+        if (array_key_exists('error', $facebookData)) {
+            debug($facebookData);
+            throw new UnauthorizedException($facebookData['error']['message']);
+        }
 
-         */
-        return $this->response;
+        $facebookId = $facebookData['data']['user_id'];
+
+        $user = $this->Users->findByFacebookId($facebookId)->first();
+
+        if ($user) {
+            $user->firstname = $userData['first_name'];
+            $user->lastname = $userData['last_name'];
+            $user->email = $userData['email'];
+            $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
+            $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
+            $user->instance_id = $instanceId;
+
+            $this->Users->save($user);
+
+            $session = $this->Sessions->find('all', ['condition' => ['user_id' => $user->id]])->first();
+
+            if (is_null($session)) {
+                $session = $this->Sessions->newEntity();
+                $session->uuid = Text::uuid();
+                $session->user = $user;
+                $this->Sessions->save($session);
+            }
+
+            $token = new Token();
+            $token->auth = $session->uuid;
+
+            return JsonBodyResponse::okResponse($this->response, $token);
+        }
+
+        if ($this->Users->findByEmail($userData['email'])->first()) {
+            throw new UnauthorizedException('connect by email');
+        }
+
+        $user = $this->Users->newEntity();
+        $user->firstname = $userData['first_name'];
+        $user->lastname = $userData['last_name'];
+        $user->facebook_id = $facebookData['data']['user_id'];
+        $user->email = $userData['email'];
+        $user->password = Security::randomBytes(32);
+        $user->instance_id = $instanceId;
+        $user->description = '';
+        $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
+        $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
+        $this->Users->save($user);
+
+
+        $session = $this->Sessions->newEntity();
+        $session->uuid = Text::uuid();
+        $session->user = $user;
+        $this->Sessions->save($session);
+
+        $token = new Token();
+        $token->auth = $session->uuid;
+
+        return JsonBodyResponse::createdResponse($this->response, $token);
+
+
     }
 }

@@ -8,6 +8,7 @@ use App\Model\Table\GendersTable;
 use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
+use Cake\Http\Response;
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
 use Cake\Network\Exception\ConflictException;
@@ -51,7 +52,7 @@ class UsersController extends ApiV1Controller
     }
 
     /**
-     * @return
+     * @return Response
      */
     public function add()
     {
@@ -64,6 +65,11 @@ class UsersController extends ApiV1Controller
         } else if (!is_string($instanceId) || strlen($instanceId) > 250
         ) {
             throw new UnprocessedEntityException('unexpected "instance_id"');
+        } else if (!array_key_exists('first_name', $userData)
+            || !is_string($userData['first_name'])
+            || strlen($userData['first_name']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "firstname"');
         } else if (!array_key_exists('last_name', $userData)
             || !is_string($userData['last_name'])
             || strlen($userData['last_name']) > 250
@@ -109,11 +115,11 @@ class UsersController extends ApiV1Controller
         $user = $this->Users->newEntity();
         $user->firstname = $userData['first_name'];
         $user->lastname = $userData['last_name'];
-        $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
         $user->email = $userData['email'];
         $user->password = $userData['password'];
         $user->instance_id = $instanceId;
         $user->description = "";
+        $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
         $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
 
 

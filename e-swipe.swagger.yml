@@ -1003,6 +1003,9 @@ definitions:
       - content
       - date
     properties:
+      uuid:
+        type: string
+        format: uuid
       user_id:
         $ref: '#/definitions/User/properties/uuid'
       content:
