@@ -40,7 +40,6 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     public function authenticate(ServerRequest $request, Response $response)
     {
-        debug("config", $this->getConfig());
         return $this->getUser($request);
     }
 
@@ -53,7 +52,6 @@ class ApiAuthenticate extends BaseAuthenticate
     public function getUser(ServerRequest $request)
     {
         $auth = $request->getHeader('name');
-        debug($this->getConfig());
         if (empty($auth) || !is_string($auth[0])) {
             return false;
         }
@@ -71,7 +69,6 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     public function unauthenticated(ServerRequest $request, Response $response)
     {
-        debug('unauthenticated', $this->getConfig());
     }
 
     /**

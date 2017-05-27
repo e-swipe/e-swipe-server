@@ -74,23 +74,23 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->fallbacks(DashedRoute::class);
 });
-
+// TODO(Fati): enlever les commentaires autour des POST
 Router::scope('/v1', function (RouteBuilder $routes) {
     $routes->connect('/login', ['controller' => 'Login', 'action' => 'basic', /*'_method' => 'POST'*/]);
-    $routes->connect('/login/facebook', ['controller' => 'Login', 'action' => 'facebookLogin', '_method' => 'POST']);
-    $routes->connect('/logout', ['controller' => 'Login', 'action' => 'logout', '_method' => 'GET']);
+    $routes->connect('/login/facebook', ['controller' => 'Login', 'action' => 'facebook', /*'_method' => 'POST'*/]);
+    $routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout', '_method' => 'GET']);
 
 
     $routes->connect('/profils', ['controller' => 'Users', 'action' => 'index', '_method' => 'GET']);
-    $routes->connect('/users', ['controller' => 'Users', 'action' => 'add', '_method' => 'POST']);
+    $routes->connect('/users', ['controller' => 'Users', 'action' => 'add', /*'_method' => 'POST'*/]);
     $routes->connect('/users/:uuid',
         ['controller' => 'Users', 'action' => 'get', '_method' => 'GET'],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/users/:uuid/accept',
-        ['controller' => 'Users', 'action' => 'accept', '_method' => 'POST'],
+        ['controller' => 'Users', 'action' => 'accept', /*'_method' => 'POST'*/],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/users/:uuid/decline',
-        ['controller' => 'Users', 'action' => 'decline', '_method' => 'POST'],
+        ['controller' => 'Users', 'action' => 'decline', /*'_method' => 'POST'*/],
         ['uuid' => '[0-9a-zA-Z]+']);
 
 
@@ -98,7 +98,7 @@ Router::scope('/v1', function (RouteBuilder $routes) {
     $routes->connect('/me', ['controller' => 'ConnectedUser', 'action' => 'update', '_method' => 'PATCH']);
     $routes->connect('/me/password', ['controller' => 'ConnectedUser', 'action' => 'changePassword', '_method' => 'PUT']);
 
-    $routes->connect('/me/photos', ['controller' => 'ConnectedUser', 'action' => 'addPhoto', '_method' => 'POST']);
+    $routes->connect('/me/photos', ['controller' => 'ConnectedUser', 'action' => 'addPhoto', /*'_method' => 'POST'*/]);
     $routes->connect('/me/photos/:uuid',
         ['controller' => 'ConnectedUser', 'action' => 'deletePhoto', '_method' => 'DELETE'],
         ['uuid' => '[0-9a-zA-Z]+']);
@@ -112,7 +112,7 @@ Router::scope('/v1', function (RouteBuilder $routes) {
         ['controller' => 'Chats', 'action' => 'get', '_method' => 'GET'],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/chats/:uuid',
-        ['controller' => 'Chats', 'action' => 'addMessage', '_method' => 'POST'],
+        ['controller' => 'Chats', 'action' => 'addMessage', /*'_method' => 'POST'*/],
         ['uuid' => '[0-9a-zA-Z]+']);
 
 
@@ -120,10 +120,10 @@ Router::scope('/v1', function (RouteBuilder $routes) {
     $routes->connect('/events/:uuid', ['controller' => 'Events', 'action' => 'get', '_method' => 'GET'],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/events/:uuid/participate',
-        ['controller' => 'Events', 'action' => 'participate', '_method' => 'POST'],
+        ['controller' => 'Events', 'action' => 'participate', /*'_method' => 'POST'*/],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/events/:uuid/decline',
-        ['controller' => 'Events', 'action' => 'decline', '_method' => 'POST'],
+        ['controller' => 'Events', 'action' => 'decline', /*'_method' => 'POST'*/],
         ['uuid' => '[0-9a-zA-Z]+']);
 });
 

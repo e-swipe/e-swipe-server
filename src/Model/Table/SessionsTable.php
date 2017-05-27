@@ -2,6 +2,9 @@
 
 namespace App\Model\Table;
 
+use App\Model\Entity\Session;
+use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -11,13 +14,13 @@ use Cake\Validation\Validator;
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
  *
- * @method \App\Model\Entity\Session get($primaryKey, $options = [])
- * @method \App\Model\Entity\Session newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Session[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Session|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Session patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Session[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Session findOrCreate($search, callable $callback = null, $options = [])
+ * @method Session get($primaryKey, $options = [])
+ * @method Session newEntity($data = null, array $options = [])
+ * @method Session[] newEntities(array $data, array $options = [])
+ * @method Session|bool save(EntityInterface $entity, $options = [])
+ * @method Session patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Session[] patchEntities($entities, array $data, array $options = [])
+ * @method Session findOrCreate($search, callable $callback = null, $options = [])
  */
 class SessionsTable extends Table
 {
@@ -69,5 +72,30 @@ class SessionsTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    /**
+     * Override this function in order to alter the schema used by this table.
+     * This function is only called after fetching the schema out of the database.
+     * If you wish to provide your own schema to this table without touching the
+     * database, you can override schema() or inject the definitions though that
+     * method.
+     *
+     * ### Example:
+     *
+     * ```
+     * protected function _initializeSchema(\Cake\Database\Schema\TableSchema $schema) {
+     *  $schema->columnType('preferences', 'json');
+     *  return $schema;
+     * }
+     * ```
+     *
+     * @param \Cake\Database\Schema\TableSchema $schema The table definition fetched from database.
+     * @return \Cake\Database\Schema\TableSchema the altered schema
+     */
+    protected function _initializeSchema(TableSchema $schema)
+    {
+        $schema->columnType('uuid', 'uuidtype');
+        return $schema;
     }
 }

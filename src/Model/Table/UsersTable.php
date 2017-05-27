@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Model\Table;
 
 use App\Model\Entity\User;
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -11,10 +11,13 @@ use Cake\Validation\Validator;
 /**
  * Users Model
  *
+ * @property \Cake\ORM\Association\BelongsTo $Facebooks
+ * @property \Cake\ORM\Association\BelongsTo $Instances
  * @property \Cake\ORM\Association\BelongsTo $Genders
  * @property \Cake\ORM\Association\HasMany $ChatsUsersMessages
  * @property \Cake\ORM\Association\HasMany $EventsUsersAccept
  * @property \Cake\ORM\Association\HasMany $EventsUsersDeny
+ * @property \Cake\ORM\Association\HasMany $Sessions
  * @property \Cake\ORM\Association\HasMany $UsersGendersLookingFor
  * @property \Cake\ORM\Association\BelongsToMany $Images
  * @property \Cake\ORM\Association\BelongsToMany $Interests
@@ -43,6 +46,7 @@ class UsersTable extends Table
         $this->setTable('users');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
+
         $this->belongsTo('Genders', [
             'foreignKey' => 'gender_id',
             'joinType' => 'INNER'
@@ -54,6 +58,9 @@ class UsersTable extends Table
             'foreignKey' => 'user_id'
         ]);
         $this->hasMany('EventsUsersDeny', [
+            'foreignKey' => 'user_id'
+        ]);
+        $this->hasMany('Sessions', [
             'foreignKey' => 'user_id'
         ]);
         $this->hasMany('UsersGendersLookingFor', [
@@ -81,8 +88,7 @@ class UsersTable extends Table
     {
         $validator
             ->integer('id')
-            ->allowEmpty('id', 'create')
-            ->add('id', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+            ->allowEmpty('id', 'create');
 
         $validator
             ->email('email')
@@ -147,7 +153,6 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
-        $rules->add($rules->isUnique(['id']));
         $rules->add($rules->existsIn(['gender_id'], 'Genders'));
 
         return $rules;

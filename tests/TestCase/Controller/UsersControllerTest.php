@@ -18,8 +18,7 @@ class UsersControllerTest extends IntegrationTestCase
     public $fixtures = [
         'app.users',
         'app.genders',
-        'app.chats_users',
-        'app.messages',
+        'app.chats_users_messages',
         'app.chat',
         'app.events_users_accept',
         'app.events_users_deny',

@@ -2,40 +2,138 @@
 
 namespace App\Controller;
 
+use App\Http\JsonBodyResponse;
 use App\Model\Entity\User;
-use Cake\Event\Event;
+use App\Model\Table\GendersTable;
+use App\Model\Table\SessionsTable;
+use App\Model\Table\UsersTable;
+use App\Network\exception\UnprocessedEntityException;
+use Cake\I18n\Date;
+use Cake\I18n\FrozenDate;
+use Cake\Network\Exception\ConflictException;
+use Cake\Network\Exception\UnauthorizedException;
+use Cake\Utility\Text;
+use Cake\Validation\Validation;
+use Eswipe\Model\Token;
+use Eswipe\Utils\Uuid;
 
 /**
  * Users Controller
  *
- * @property \App\Model\Table\UsersTable $Users
+ * @property UsersTable $Users
+ * @property SessionsTable Sessions
+ * @property GendersTable Genders
  *
  * @method User[] paginate($object = null, array $settings = [])
  */
 class UsersController extends ApiV1Controller
 {
-    public function beforeFilter(Event $event)
+
+    public function logout()
     {
-        parent::beforeFilter($event);
-        $this->Auth->allow(['add']);
+        $auth = $this->request->getHeaderLine('auth');
+        $this->loadModel('Sessions');
+
+        if (!Uuid::isValid($auth)) {
+            throw new UnauthorizedException();
+        }
+
+        $session = $this->Sessions->get($auth);
+
+        if (is_null($session)) {
+            throw new UnauthorizedException();
+        }
+
+        var_dump($auth);
+
+        $this->Sessions->delete($session);
+
+        $response = $this->response->withStatus(204);
+        return $response;
     }
 
-    public function login()
+    public function add()
     {
-        if ($this->Auth->user()) {
-            $this->Flash->error(__('Already logged in'));
-            return $this->redirect(['action' => 'profil']);
+        $instanceId = $this->request->getQuery('instance_id');
+        $userData = $this->request->getData();
+
+
+        if (empty($userData)) {
+            throw new UnprocessedEntityException('incorrect data');
         }
 
-        if ($this->request->is('post')) {
-            $user = $this->Auth->identify();
-            if ($user) {
-                $this->Auth->setUser($user);
-                $this->set('token', $this->Auth->user());
-                debug($this->Auth->user());
+        if (!is_string($instanceId) || strlen($instanceId) > 250) {
+            $message = 'unauthorized "instance_id" type';
+        } else if (!is_string($instanceId)
+            || strlen($instanceId) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "instance_id"');
+        } else if (!array_key_exists('last_name', $userData)
+            || !is_string($userData['last_name'])
+            || strlen($userData['last_name']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "firstname"');
+        } else if (!array_key_exists('gender', $userData)
+            || !is_string($userData['gender'])
+            || strlen($userData['gender']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "firstname"');
+        } else if (!array_key_exists('date_of_birth', $userData)
+            || !is_string($userData['date_of_birth'])
+        ) {
+            $date = FrozenDate::parseDate($userData['date_of_birth']);
+
+            if (!$date) {
+                throw new UnprocessedEntityException('unexpected "date"');
             }
-            $this->Flash->error(__('Invalid username or password, try again'));
+
+            if ($date->diff(Date::now())->y < 18) {
+                throw new UnprocessedEntityException('unexpected "age"');
+            }
+
+        } else if (!array_key_exists('email', $userData)
+            || !is_string($userData['email'])
+            || !Validation::email($userData['email'])
+        ) {
+            throw new UnprocessedEntityException('unexpected "email"');
+        } else if (!array_key_exists('password', $userData)
+            || !is_string($userData['password'])
+            || strlen($userData['password']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "email"');
         }
+
+        $this->loadModel('Genders');
+        $this->loadModel('Sessions');
+
+        $gender =
+
+
+        $user = $this->Users->newEntity();
+        $user->firstname = $userData['first_name'];
+        $user->lastname = $userData['last_name'];
+        $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
+        $user->email = $userData['email'];
+        $user->password = $userData['password'];
+        $user->instance_id = $instanceId;
+        $user->description = "";
+        $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
+
+
+        $session = $this->Sessions->newEntity();
+        $session->uuid = Text::uuid();
+        $session->user = $this->Users->save($user);
+
+        if (!$session->user) {
+            throw new ConflictException('user already exists');
+        }
+
+        $this->Sessions->save($session);
+
+        $token = new Token();
+        $token->auth = $session->uuid;
+
+        return JsonBodyResponse::createdResponse($this->response, $token);
     }
 
     /**
@@ -45,7 +143,10 @@ class UsersController extends ApiV1Controller
      */
     public function index()
     {
-        $users =['test'];
+        $this->paginate = [
+            'contain' => ['Genders']
+        ];
+        $users = $this->paginate($this->Users);
 
         $this->set(compact('users'));
         $this->set('_serialize', ['users']);
@@ -61,36 +162,13 @@ class UsersController extends ApiV1Controller
     public function view($id = null)
     {
         $user = $this->Users->get($id, [
-            'contain' => ['Genders', 'Images', 'Interests', 'ChatsUsers', 'EventsUsersAccept', 'EventsUsersDeny', 'UsersGendersLookingFor']
+            'contain' => ['Genders', 'Images', 'Interests', 'ChatsUsersMessages', 'EventsUsersAccept', 'EventsUsersDeny', 'UsersGendersLookingFor']
         ]);
 
         $this->set('user', $user);
         $this->set('_serialize', ['user']);
     }
 
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $user = $this->Users->newEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $genders = $this->Users->Genders->find('list', ['limit' => 200]);
-        $images = $this->Users->Images->find('list', ['limit' => 200]);
-        $interests = $this->Users->Interests->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'genders', 'images', 'interests'));
-        $this->set('_serialize', ['user']);
-    }
 
     /**
      * Edit method

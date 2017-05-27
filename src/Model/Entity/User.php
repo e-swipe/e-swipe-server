@@ -1,6 +1,10 @@
 <?php
+
 namespace App\Model\Entity;
 
+use App\Model\Entity\EventsUsersAccept;
+use App\Model\Entity\EventsUsersDeny;
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
 /**
@@ -22,13 +26,13 @@ use Cake\ORM\Entity;
  * @property int $min_age
  * @property int $max_age
  *
- * @property \App\Model\Entity\Gender $gender
- * @property \App\Model\Entity\ChatsUser[] $chats_users
- * @property \App\Model\Entity\EventsUsersAccept[] $events_users_accept
- * @property \App\Model\Entity\EventsUsersDeny[] $events_users_deny
- * @property \App\Model\Entity\UsersGendersLookingFor[] $users_genders_looking_for
- * @property \App\Model\Entity\Image[] $images
- * @property \App\Model\Entity\Interest[] $interests
+ * @property Gender $gender
+ * @property ChatsUsersMessage[] $chats_users_messages
+ * @property EventsUsersAccept[] $events_users_accept
+ * @property EventsUsersDeny[] $events_users_deny
+ * @property UsersGendersLookingFor[] $users_genders_looking_for
+ * @property Image[] $images
+ * @property Interest[] $interests
  */
 class User extends Entity
 {
@@ -55,4 +59,9 @@ class User extends Entity
     protected $_hidden = [
         'password'
     ];
+
+    protected function _setPassword($password)
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
 }

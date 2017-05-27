@@ -43,18 +43,20 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('RequestHandler');
-        $this->loadComponent('Flash');
+        //$this->loadComponent('Flash');
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see http://book.cakephp.org/3.0/en/controllers/components/security.html
          */
-        $this->loadComponent('Security');
-        $this->loadComponent('Csrf');
+        //$this->loadComponent('Security');
+        //$this->loadComponent('Csrf');
     }
 
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
+        // TODO: a enlever
+        $this->response = $this->response->withHeader('Access-Control-Allow-Origin', '*');
     }
 
 

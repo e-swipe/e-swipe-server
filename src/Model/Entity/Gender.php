@@ -2,19 +2,19 @@
 
 namespace App\Model\Entity;
 
+use App\Model\Entity\UsersGendersLookingFor;
 use Cake\ORM\Entity;
-use Eswipe\Utils\Uuid;
 
 /**
- * Session Entity
+ * Gender Entity
  *
- * @property string|resource $uuid
- * @property int $user_id
+ * @property int $id
+ * @property string $name
  *
- * @property \App\Model\Entity\User $user
- *
+ * @property User[] $users
+ * @property UsersGendersLookingFor[] $users_genders_looking_for
  */
-class Session extends Entity
+class Gender extends Entity
 {
 
     /**
@@ -28,6 +28,6 @@ class Session extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'uuid' => false
+        'id' => false
     ];
 }

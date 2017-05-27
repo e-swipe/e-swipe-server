@@ -13,7 +13,7 @@
 DROP TABLE IF EXISTS `genders`;
 
 CREATE TABLE IF NOT EXISTS `genders` (
-    `id`   INT UNSIGNED NOT NULL,
+    `id`   INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(50)  NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC),
@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS `genders` (
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE IF NOT EXISTS `users` (
-    `id`            INT UNSIGNED NOT NULL,
-    `facebook_id`   BIGINT(64)   NULL     DEFAULT NULL,
+    `id`            INT UNSIGNED NOT NULL     AUTO_INCREMENT,
+    `facebook_id`   BIGINT(64)   NULL         DEFAULT NULL,
     `email`         VARCHAR(250) NOT NULL,
     `password`      VARCHAR(250) NOT NULL,
     `instance_id`   VARCHAR(250) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `date_of_birth` DATE         NOT NULL,
     `latitude`      DOUBLE       NULL,
     `longitude`     DOUBLE       NULL,
-    `is_visible`    TINYINT      NOT NULL DEFAULT 1,
+    `is_visible`    TINYINT      NOT NULL     DEFAULT 1,
     `gender_id`     INT UNSIGNED NOT NULL,
     `min_age`       INT UNSIGNED NOT NULL     DEFAULT 18,
     `max_age`       INT UNSIGNED NOT NULL     DEFAULT 18,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 DROP TABLE IF EXISTS `chat`;
 
 CREATE TABLE IF NOT EXISTS `chat` (
-    `id` INT UNSIGNED NOT NULL,
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC)
 );
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS `decline` (
 DROP TABLE IF EXISTS `events`;
 
 CREATE TABLE IF NOT EXISTS `events` (
-    `id`          INT UNSIGNED NOT NULL,
+    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name`        VARCHAR(250) NOT NULL,
     `description` VARCHAR(500) NOT NULL,
     `date_begin`  DATETIME     NOT NULL,
@@ -181,12 +181,11 @@ CREATE TABLE IF NOT EXISTS `events_users_deny` (
 DROP TABLE IF EXISTS `images`;
 
 CREATE TABLE IF NOT EXISTS `images` (
-    `id`   INT UNSIGNED NOT NULL,
+    `id`   INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `url`  VARCHAR(250) NOT NULL,
-    `uuid` CHAR(36)     NOT NULL,
+    `uuid` BINARY(16)   NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `uuid_UNIQUE` (`uuid` ASC),
-    UNIQUE INDEX `url_UNIQUE` (`url` ASC),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC)
 );
 
@@ -234,7 +233,7 @@ CREATE TABLE IF NOT EXISTS `images_users` (
 DROP TABLE IF EXISTS `interests`;
 
 CREATE TABLE IF NOT EXISTS `interests` (
-    `id`   INT UNSIGNED NOT NULL,
+    `id`   INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(50)  NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC)
@@ -280,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `events_interests` (
 DROP TABLE IF EXISTS `chats_users_messages`;
 
 CREATE TABLE IF NOT EXISTS `chats_users_messages` (
-    `id` INT UNSIGNED NOT NULL,
+    `id`         INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `chat_id`    INT UNSIGNED NOT NULL,
     `user_id`    INT UNSIGNED NOT NULL,
     `content`    TEXT         NOT NULL,
@@ -313,3 +312,15 @@ CREATE TABLE IF NOT EXISTS `users_genders_looking_for` (
     FOREIGN KEY (`gender_id`)
     REFERENCES `genders` (`id`)
 );
+
+-- auto-generated definition
+CREATE TABLE sessions
+(
+    uuid    BINARY(16)       NOT NULL PRIMARY KEY,
+    user_id INT(10) UNSIGNED NOT NULL,
+    UNIQUE INDEX `uuid_UNIQUE` (`uuid` ASC),
+    FOREIGN KEY (user_id) REFERENCES eswipe.users (id)
+        ON DELETE CASCADE
+)
+    COMMENT 'connexions des utilisateurs';
+

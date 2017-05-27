@@ -3,9 +3,9 @@ info:
   title: E-swipe
   description: Move your life forward with the E-swipe app
   version: 1.0.0
-host: api.stardis.blue
+host: localhost:8765
 schemes:
-  - https
+  - http
 basePath: /v1
 produces:
   - application/json
@@ -103,6 +103,8 @@ responses:
     description: 'SUCCESS: No Content'
   401:
     description: 'FAIL: Unauthorized'
+  409:
+    description: 'FAIL: Conflict'
   422:
     description: 'FAIL: incorrect parameters'
     schema:
@@ -206,10 +208,10 @@ paths:
     get:
       summary: logout from application
       responses:
-        200:
-          description: Success
-        422:
-          $ref: '#/responses/422'
+        204:
+          $ref: '#/responses/204'
+        401:
+          $ref: '#/responses/401'
         default:
           $ref: '#/responses/default'
       tags:
@@ -223,19 +225,26 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UserCreate'
+        - name: instance_id
+          in: query
+          required: true
+          type: string
+          description: Firebase Instance Id
       responses:
         201:
           description: created
           schema:
             $ref: '#/definitions/Token'
-        401:
-          $ref: '#/responses/401'
+        409:
+          $ref: '#/responses/409'
         422:
           $ref: '#/responses/422'
         default:
           $ref: '#/responses/default'
       tags:
         - User
+      security:
+        []
   /users/{uuid}:
     get:
       summary: get user
@@ -702,6 +711,7 @@ definitions:
       date_of_birth:
         type: string
         format: date
+        example: '12/25/1998'
       description:
         type: string
       picture_url:
