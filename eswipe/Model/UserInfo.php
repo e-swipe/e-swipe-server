@@ -41,7 +41,7 @@ class UserInfo
         $this->looking_for = Hash::extract($user['looking_for'], '{n}.name');
         $this->looking_for_age_min = $user['min_age'];
         $this->looking_for_age_max = $user['max_age'];
-        $this->is_visible = $user['is_visible'];
+        $this->is_visible = boolval($user['is_visible']);
         $this->position = new Position($user['latitude'], $user['longitude']);
         $pictures = Hash::sort($user['images'], '{n}._joinData.order', 'asc');
 

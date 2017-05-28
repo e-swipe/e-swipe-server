@@ -21,7 +21,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenDate $date_of_birth
  * @property float $latitude
  * @property float $longitude
- * @property int $is_visible
+ * @property boolean $is_visible
  * @property int $gender_id
  * @property int $min_age
  * @property int $max_age
