@@ -15,6 +15,7 @@ class ApiV1Controller extends AppController
     public function initialize()
     {
         parent::initialize();
+
         $this->loadComponent('Auth', ['authenticate' => ['Api',],
             'unauthorizedRedirect' => false]);
     }

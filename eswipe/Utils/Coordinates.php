@@ -9,6 +9,7 @@
 namespace Eswipe\Utils;
 
 
+use Eswipe\Model\BoundingBox;
 use Eswipe\Model\Position;
 
 class Coordinates
@@ -18,6 +19,14 @@ class Coordinates
         return new Position($latitude, $longitude);
     }
 
+    /**
+     *
+     * @see https://stackoverflow.com/a/40272394/3047350
+     * @param $latitude
+     * @param $longitude
+     * @param $kilometer
+     * @return BoundingBox
+     */
     public static function getBoundingBox($latitude, $longitude, $kilometer)
     {
 
@@ -28,7 +37,7 @@ class Coordinates
 
         $deltaLongitude = asin(sin($distance) / cos($latitudeRadians));
 
-        $bounds = new \stdClass();
+        $bounds = new BoundingBox();
 
         // these are the outer bounds of the circle (S2)
         $bounds->minLat = rad2deg($latitudeRadians - $distance);
@@ -45,4 +54,8 @@ class Coordinates
         return $bounds;
 
     }
+
+    /**
+     * curl -X PATCH "https://api.stardis.blue/v1/me" -H  "accept: application/json" -H  "auth: c1af9e3a-92fc-4ce1-8cbd-421ecdbda71b" -H  "content-type: application/json" -d "{"description":"","gender":"female","is_visible":true,"looking_for_age_max":0,"looking_for_age_min":0}"
+     */
 }

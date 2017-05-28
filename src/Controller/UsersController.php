@@ -8,15 +8,20 @@ use App\Model\Table\GendersTable;
 use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
+use App\Validator\DataValidator;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Event\Event;
 use Cake\Http\Response;
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
 use Cake\Network\Exception\ConflictException;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\Utility\Hash;
 use Cake\Utility\Text;
 use Cake\Validation\Validation;
 use Eswipe\Model\Token;
+use Eswipe\Model\UserCard;
+use Eswipe\Utils\Coordinates;
 use Eswipe\Utils\Uuid;
 
 /**
@@ -150,13 +155,62 @@ class UsersController extends ApiV1Controller
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Genders']
-        ];
-        $users = $this->paginate($this->Users);
+        $message = DataValidator::validateProfiles($this->request);
+        if (!is_null($message)) {
+            throw new UnprocessedEntityException($message);
+        }
 
-        $this->set(compact('users'));
-        $this->set('_serialize', ['users']);
+        $latitude = $this->request->getQuery('latitude');
+        $longitude = $this->request->getQuery('longitude');
+        $radius = $this->request->getQuery('radius', 50);
+
+
+        $user_id = $this->Auth->user('id');
+
+        $user = $this->Users->get(10, ['contain' => ['LookingFor']]);
+        // maj de la position de l'utilisateur :)
+        $user->latitude = $latitude;
+        $user->longitude = $longitude;
+
+        $this->Users->save($user);
+
+        $user->looking_for = Hash::extract($user->looking_for, '{n}.id');
+        $bounding = Coordinates::getBoundingBox($latitude, $longitude, $radius);
+
+        $query = new QueryExpression();
+        $query->between('Users.latitude', $bounding->minLat, $bounding->maxLat)
+            ->between('Users.longitude', $bounding->minLat, $bounding->maxLong)
+            ->notEq('Users.id', $user->id);
+
+        if ($user->looking_for) {
+            $query->in('Users.gender_id', $user->looking_for);
+        }
+
+        $users = $this->Users->find('all', [
+            'fields' => ['id', 'firstname', 'lastname', 'date_of_birth', 'latitude', 'longitude'],
+            'contain' => ['Images']
+        ])
+            ->where($query)
+            ->matching('UsersGendersLookingFor', function ($q) use ($user) {
+                return $q->where(['UsersGendersLookingFor.gender_id' => $user->gender_id]);
+            })
+            ->notMatching('Matched', function ($q) use ($user) {
+                return $q->where(['Matched.matcher_id' => $user->id]);
+            })
+            ->notMatching('Accepted', function ($q) use ($user) {
+                return $q->where(['Accepted.accepter_id' => $user->id]);
+            })
+            ->notMatching('Declined', function ($q) use ($user) {
+                return $q->where(['Declined.decliner_id' => $user->id]);
+            })
+            ->limit(10)->all();
+        $usersCard = [];
+        foreach ($users as $userCard) {
+            $userCard->date_of_birth = $userCard->date_of_birth->format('m/d/Y');
+            $usersCard[] = new UserCard($userCard->toArray());
+        }
+
+        return JsonBodyResponse::okResponse($this->response, $usersCard);
     }
 
     /**

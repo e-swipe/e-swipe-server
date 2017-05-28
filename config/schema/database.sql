@@ -88,9 +88,9 @@ CREATE TABLE IF NOT EXISTS `matches` (
 -- -----------------------------------------------------
 -- Table `accept`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `accept`;
+DROP TABLE IF EXISTS `accepts`;
 
-CREATE TABLE IF NOT EXISTS `accept` (
+CREATE TABLE IF NOT EXISTS `accepts` (
     `accepter_id` INT UNSIGNED NOT NULL,
     `accepted_id` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`accepter_id`, `accepted_id`),
@@ -106,9 +106,9 @@ CREATE TABLE IF NOT EXISTS `accept` (
 -- -----------------------------------------------------
 -- Table `decline`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `decline`;
+DROP TABLE IF EXISTS `declines`;
 
-CREATE TABLE IF NOT EXISTS `decline` (
+CREATE TABLE IF NOT EXISTS `declines` (
     `decliner_id` INT UNSIGNED NOT NULL,
     `declined_id` INT UNSIGNED NOT NULL,
     PRIMARY KEY (`decliner_id`, `declined_id`),

@@ -48,20 +48,30 @@ class UsersTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->hasMany('Accepted', [
+            'className' => 'Accepts',
+            'foreignKey' => 'accepted_id']);
+        $this->hasMany('Declined', [
+            'className' => 'Declines',
+            'foreignKey' => 'declined_id']);
+        $this->hasMany('Matched', [
+            'className' => 'Matches',
+            'foreignKey' => 'matched_id']);
+
         $this->belongsTo('Genders', [
             'foreignKey' => 'gender_id',
             'joinType' => 'INNER'
         ]);
 
         $this->belongsToMany('LookingFor', [
-            'className'=>'Genders',
+            'className' => 'Genders',
             'foreignKey' => 'user_id',
             'targetForeignKey' => 'gender_id',
             'joinTable' => 'users_genders_looking_for'
         ]);
 
         $this->belongsToMany('Events', [
-            'className'=>'Events',
+            'className' => 'Events',
             'foreignKey' => 'user_id',
             'targetForeignKey' => 'event_id',
             'joinTable' => 'events_users_accept'
