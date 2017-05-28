@@ -149,7 +149,7 @@ class UsersTable extends Table
             ->allowEmpty('longitude');
 
         $validator
-            ->integer('is_visible')
+            ->boolean('is_visible')
             ->requirePresence('is_visible', 'create')
             ->notEmpty('is_visible');
 

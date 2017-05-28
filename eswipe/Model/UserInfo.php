@@ -53,7 +53,7 @@ class UserInfo
             $this->picture_url = $this->pictures[0]->url;
 
         $this->events = [];
-        foreach($user['events'] as $event){
+        foreach ($user['events'] as $event) {
             $this->events[] = new EventCard($event);
         }
 
