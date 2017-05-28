@@ -31,7 +31,7 @@ class ProfilController extends ApiV1Controller
             'contain' => ['LookingFor', 'Genders', 'Images', 'Events' => ['Images']]
         ]);
 
-        $user->date_of_birth = $user->date_of_birth->('m/d/y');
+        $user->date_of_birth = $user->date_of_birth->format('m/d/y');
         $userInfo = new UserInfo($user->toArray());
 
         return JsonBodyResponse::okResponse($this->response, $userInfo);
