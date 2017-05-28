@@ -112,7 +112,7 @@ class LoginController extends AppController
 
         $user = $this->Users->findByFacebookId($facebookId)->first();
 
-        if ($user) {
+        if ($user) { // if user exists
             $user->firstname = $userData['first_name'];
             $user->lastname = $userData['last_name'];
             $user->email = $userData['email'];
@@ -139,7 +139,7 @@ class LoginController extends AppController
         if ($this->Users->findByEmail($userData['email'])->first()) {
             throw new UnauthorizedException('connect by email');
         }
-
+        // new user
         $user = $this->Users->newEntity();
         $user->firstname = $userData['first_name'];
         $user->lastname = $userData['last_name'];
@@ -150,8 +150,11 @@ class LoginController extends AppController
         $user->description = '';
         $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
         $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
-        $this->Users->save($user);
 
+        $user->max_age = $user->date_of_birth->age + 10;
+        $user->min_age = $user->date_of_birth->age > 28 ? $user->date_of_birth->age - 10 : 18;
+
+        $this->Users->save($user);
 
         $session = $this->Sessions->newEntity();
         $session->uuid = Text::uuid();

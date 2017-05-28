@@ -11,6 +11,8 @@ namespace App\Controller;
 
 use App\Http\JsonBodyResponse;
 use App\Model\Table\UsersTable;
+use App\Network\Exception\UnprocessedEntityException;
+use App\Validator\DataValidator;
 use Eswipe\Model\UserInfo;
 
 /**
@@ -39,7 +41,26 @@ class ProfilController extends ApiV1Controller
 
     public function patch()
     {
-        //TODO
+        $this->loadModel('Users');
+        $user_id = $this->Auth->user('id');
+
+        $message = DataValidator::validateMePatch($this->request);
+        if (!is_null($message)) {
+            throw new UnprocessedEntityException($message);
+        }
+        $userPatch = $this->request->getData();
+
+        $user = $this->Users->get($user_id, ['contain' => ['LookingFor']]);
+        $this->Users->LookingFor->unlink($user, $user->looking_for); // suppresion des anciennes liaisons
+
+        debug($userPatch['looking_for']);
+        $genders = $this->Users->LookingFor
+            ->find('all')->where(['name IN' => $userPatch['looking_for']])->all();
+
+        debug($genders);
+        $this->Users->LookingFor->link($user, $genders);
+        debug($user);
+
     }
 
     public function changePassword()

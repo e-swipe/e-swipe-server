@@ -81,13 +81,13 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     protected function _findAuth($token)
     {
-        $result = $this->_query($token)->first()->user;
+        $result = $this->_query($token)->first();
 
         if (empty($result)) {
             return false;
         }
 
-        return $result->toArray();
+        return $result->user->toArray();
     }
 
     /**

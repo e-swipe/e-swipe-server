@@ -39,8 +39,10 @@ class UsersController extends ApiV1Controller
     public function logout()
     {
         $this->Auth->user();
+        $auth = $this->request->getHeaderLine('auth');
+        $this->loadModel('Sessions');
 
-        if (!Uuid::isValid($auth)) {
+        if (is_null($auth) || !Uuid::isValid($auth)) {
             throw new UnauthorizedException();
         }
 
@@ -107,7 +109,7 @@ class UsersController extends ApiV1Controller
             || !is_string($userData['password'])
             || strlen($userData['password']) > 250
         ) {
-            throw new UnprocessedEntityException('unexpected "email"');
+            throw new UnprocessedEntityException('unexpected "password"');
         }
 
         if ($this->Users->findByEmail($userData['email'])->first()) {
@@ -122,6 +124,10 @@ class UsersController extends ApiV1Controller
         $user->instance_id = $instanceId;
         $user->description = "";
         $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
+
+        $user->max_age = $user->date_of_birth->age + 10;
+        $user->min_age = $user->date_of_birth->age > 28 ? $user->date_of_birth->age - 10 : 18;
+
         $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
 
 
