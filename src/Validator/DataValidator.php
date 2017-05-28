@@ -68,6 +68,7 @@ class DataValidator
     public static function userPatchValidator()
     {
         $validator = new Validator();
+
         $validator->allowEmpty('first_name')
             ->maxLength('first_name', 250);
 
@@ -76,10 +77,25 @@ class DataValidator
         $validator->allowEmpty('gender')->maxLength('gender', 250);
         $validator->allowEmpty('description')->maxLength('description', 500);
         $validator->allowEmpty('looking_for')->isArray('looking_for');
-        $validator->allowEmpty('looking_for_age_min')->range('looking_for_age_min', [18, 100]);
-        $validator->allowEmpty('looking_for_age_max')->range('looking_for_age_max', [18, 100]);
+        $validator->allowEmpty('looking_for_age_min')
+            ->range('looking_for_age_min', [18, 100], null, function ($context) {
+                return $context['data']['looking_for_age_min'] != 0;
+            });
+        $validator->allowEmpty('looking_for_age_max')
+            ->range('looking_for_age_max', [18, 100], null, function ($context) {
+                return $context['data']['looking_for_age_max'] != 0;
+            });
         $validator->allowEmpty('is_visible')->boolean('is_visible');
         return $validator;
+    }
+
+    public static function validateProfiles(ServerRequest $request)
+    {
+        $validator = new Validator();
+        $validator->requirePresence('latitude')->latitude('latitude');
+        $validator->requirePresence('longitude')->longitude('longitude');
+        $validator->allowEmpty('radius')->integer('radius')->range('radius', [10, 200]);
+        return self::toStringValidationErrors($validator, $request->getQueryParams());
     }
 
 }
