@@ -30,6 +30,8 @@ class ProfilController extends ApiV1Controller
         $this->loadModel('Users');
         $user_id = $this->Auth->user('id');
 
+        // TODO : optimize
+        // https://api.cakephp.org/3.4/class-Cake.ORM.Query.html#_contain
         $user = $this->Users->get($user_id, [
             'contain' => ['LookingFor', 'Genders', 'Images', 'Events' => ['Images']]
         ]);
@@ -54,7 +56,7 @@ class ProfilController extends ApiV1Controller
         });
 
         $user = $this->Users->get($user_id, ['contain' => ['LookingFor']]);
-        if (isset($userPatch['looking_for'])) {
+        if (isset($userPatch['looking_for']) && !empty($userPatch['looking_for'])) {
             $this->Users->LookingFor->unlink($user, $user->looking_for); // suppresion des anciennes liaisons
 
             $genders = $this->Users->LookingFor
@@ -103,7 +105,7 @@ class ProfilController extends ApiV1Controller
 
     public function changePassword()
     {
-        //TODO
+
     }
 
     public function addPhoto()

@@ -81,10 +81,14 @@ class UsersTable extends Table
         $this->hasMany('UsersGendersLookingFor', [
             'foreignKey' => 'user_id'
         ]);
+
+        //TODO: https://book.cakephp.org/3.0/fr/orm/associations.html#associations-belongstomany
+        //order by asc
         $this->belongsToMany('Images', [
             'foreignKey' => 'user_id',
             'targetForeignKey' => 'image_id',
-            'joinTable' => 'images_users'
+            'joinTable' => 'images_users',
+            'sort' => ['ImagesUsers.order' => 'ASC']
         ]);
         $this->belongsToMany('Interests', [
             'foreignKey' => 'user_id',
