@@ -52,13 +52,13 @@ class ProfilController extends ApiV1Controller
             throw new UnprocessedEntityException($message);
         }
         $userPatch = array_filter($this->request->getData(), function ($key) {
-            return $key !== null;
+            return $key != null;
         });
 
         $user = $this->Users->get($user_id, ['contain' => ['LookingFor']]);
 
         //TODO : faire ca en plus joli :)
-        if (isset($userPatch['looking_for']) && !empty($userPatch['looking_for'])) {
+        if (isset($userPatch['looking_for'])) {
             $this->Users->LookingFor->unlink($user, $user->looking_for); // suppresion des anciennes liaisons
 
             $genders = $this->Users->LookingFor
