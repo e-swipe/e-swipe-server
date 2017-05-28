@@ -56,6 +56,8 @@ class ProfilController extends ApiV1Controller
         });
 
         $user = $this->Users->get($user_id, ['contain' => ['LookingFor']]);
+
+        //TODO : faire ca en plus joli :)
         if (isset($userPatch['looking_for']) && !empty($userPatch['looking_for'])) {
             $this->Users->LookingFor->unlink($user, $user->looking_for); // suppresion des anciennes liaisons
 
@@ -64,7 +66,6 @@ class ProfilController extends ApiV1Controller
 
             $this->Users->LookingFor->link($user, $genders);// reassociation de la liaison :)
         }
-
 
         if (isset($userPatch['first_name'])) {
             $user->firstname = $userPatch['first_name'];

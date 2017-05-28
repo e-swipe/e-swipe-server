@@ -10,6 +10,7 @@ use Cake\Auth\DefaultPasswordHasher;
 use Cake\Core\Configure;
 use Cake\Http\Client;
 use Cake\I18n\FrozenDate;
+use Cake\Log\Log;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\Utility\Security;
 use Cake\Utility\Text;
@@ -133,12 +134,14 @@ class LoginController extends AppController
 
             $token = new Token($session->uuid);
 
+            Log::info("[LOGIN][facebook][200]" . $session->uuid . ":" . $user->facebook_id);
             return JsonBodyResponse::okResponse($this->response, $token);
         }
 
         if ($this->Users->findByEmail($userData['email'])->first()) {
             throw new UnauthorizedException('connect by email');
         }
+
         // new user
         $user = $this->Users->newEntity();
         $user->firstname = $userData['first_name'];
@@ -163,6 +166,7 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
+        Log::info("[LOGIN][facebook][201]" . $session->uuid . ":" . $user->facebook_id);
         return JsonBodyResponse::createdResponse($this->response, $token);
 
 
