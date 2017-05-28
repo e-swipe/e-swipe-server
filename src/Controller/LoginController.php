@@ -66,7 +66,7 @@ class LoginController extends AppController
         $user->instance_id = $instanceId;
         $this->Users->save($user);
 
-        $session = $this->Sessions->find('all', ['condition' => ['user_id' => $user->id]])->first();
+        $session = $this->Sessions->findByUserId($user->id)->first();
 
         if (is_null($session)) {
             $session = $this->Sessions->newEntity();
@@ -77,7 +77,7 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
-
+        Log::info('[LOGIN][default][201][' . $user->id . ']' . $session->uuid . ' : ' . $user->id);
         return JsonBodyResponse::okResponse($this->response, $token);
     }
 
@@ -123,8 +123,7 @@ class LoginController extends AppController
 
             $this->Users->save($user);
 
-            $session = $this->Sessions->find('all', ['condition' => ['user_id' => $user->id]])->first();
-
+            $session = $this->Sessions->findByUserId($user->id)->first();
             if (is_null($session)) {
                 $session = $this->Sessions->newEntity();
                 $session->uuid = Text::uuid();
