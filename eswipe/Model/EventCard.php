@@ -20,10 +20,7 @@ class EventCard
 
     /**
      * EventCard constructor.
-     * @param string $uuid
-     * @param string $name
-     * @param string $picture_url
-     * @param Position $position
+     * @param $eventCard
      */
     public function __construct($eventCard)
     {

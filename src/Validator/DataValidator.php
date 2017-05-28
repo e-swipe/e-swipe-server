@@ -68,16 +68,17 @@ class DataValidator
     public static function userPatchValidator()
     {
         $validator = new Validator();
-        $validator->requirePresence('first_name')
+        $validator->allowEmpty('first_name')
             ->maxLength('first_name', 250);
 
-        $validator->maxLength('last_name', 250);
+        $validator->allowEmpty('last_name')->maxLength('last_name', 250);
 
-        $validator->maxLength('gender', 250);
-        $validator->isArray('looking_for')->notEmpty('looking_for');
-        $validator->range('looking_for_age_min', [18, 100]);
-        $validator->range('looking_for_age_max', [18, 100]);
-        $validator->boolean('is_visible');
+        $validator->allowEmpty('gender')->maxLength('gender', 250);
+        $validator->allowEmpty('description')->maxLength('description', 500);
+        $validator->allowEmpty('looking_for')->isArray('looking_for');
+        $validator->allowEmpty('looking_for_age_min')->range('looking_for_age_min', [18, 100]);
+        $validator->allowEmpty('looking_for_age_max')->range('looking_for_age_max', [18, 100]);
+        $validator->allowEmpty('is_visible')->boolean('is_visible');
         return $validator;
     }
 
