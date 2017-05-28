@@ -51,7 +51,7 @@ class DataValidator
             ->maxLength('gender', 250);
 
         $validator->requirePresence('date_of_birth')
-            ->date('date_of_birth','mdy');
+            ->date('date_of_birth', 'mdy');
 
         return $validator;
     }

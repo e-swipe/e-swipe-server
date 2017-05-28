@@ -20,6 +20,7 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\HasMany $Sessions
  * @property \Cake\ORM\Association\HasMany $UsersGendersLookingFor
  * @property \Cake\ORM\Association\BelongsToMany $Images
+ * @property \Cake\ORM\Association\BelongsToMany $LookingFor
  * @property \Cake\ORM\Association\BelongsToMany $Interests
  *
  * @method User get($primaryKey, $options = [])
@@ -50,6 +51,20 @@ class UsersTable extends Table
         $this->belongsTo('Genders', [
             'foreignKey' => 'gender_id',
             'joinType' => 'INNER'
+        ]);
+
+        $this->belongsToMany('LookingFor', [
+            'className'=>'Genders',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'gender_id',
+            'joinTable' => 'users_genders_looking_for'
+        ]);
+
+        $this->belongsToMany('Events', [
+            'className'=>'Events',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'event_id',
+            'joinTable' => 'events_users_accept'
         ]);
         $this->hasMany('ChatsUsersMessages', [
             'foreignKey' => 'user_id'

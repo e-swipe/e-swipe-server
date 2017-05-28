@@ -94,18 +94,18 @@ Router::scope('/v1', function (RouteBuilder $routes) {
         ['uuid' => '[0-9a-zA-Z]+']);
 
 
-    $routes->connect('/me', ['controller' => 'ConnectedUser', 'action' => 'get', '_method' => 'GET']);
-    $routes->connect('/me', ['controller' => 'ConnectedUser', 'action' => 'update', '_method' => 'PATCH']);
-    $routes->connect('/me/password', ['controller' => 'ConnectedUser', 'action' => 'changePassword', '_method' => 'PUT']);
+    $routes->connect('/me', ['controller' => 'Profil', 'action' => 'profil', '_method' => 'GET']);
+    $routes->connect('/me', ['controller' => 'Profil', 'action' => 'patch', '_method' => 'PATCH']);
+    $routes->connect('/me/password', ['controller' => 'Profil', 'action' => 'changePassword', '_method' => 'PUT']);
 
-    $routes->connect('/me/photos', ['controller' => 'ConnectedUser', 'action' => 'addPhoto', /*'_method' => 'POST'*/]);
+    $routes->connect('/me/photos', ['controller' => 'Profil', 'action' => 'addPhoto', /*'_method' => 'POST'*/]);
     $routes->connect('/me/photos/:uuid',
-        ['controller' => 'ConnectedUser', 'action' => 'deletePhoto', '_method' => 'DELETE'],
+        ['controller' => 'Profil', 'action' => 'deletePhoto', '_method' => 'DELETE'],
         ['uuid' => '[0-9a-zA-Z]+']);
     $routes->connect('/me/photos',
-        ['controller' => 'ConnectedUser', 'action' => 'updatePhotosOrder', '_method' => 'PUT']);
+        ['controller' => 'Profil', 'action' => 'updatePhotosOrder', '_method' => 'PUT']);
 
-    $routes->connect('/me/chats', ['controller' => 'ConnectedUser', 'action' => 'getChats', '_method' => 'GET']);
+    $routes->connect('/me/chats', ['controller' => 'Profil', 'action' => 'getChats', '_method' => 'GET']);
 
 
     $routes->connect('/chats/:uuid',

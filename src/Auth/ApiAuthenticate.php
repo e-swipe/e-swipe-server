@@ -5,7 +5,9 @@ namespace App\Auth;
 use Cake\Auth\BaseAuthenticate;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\TableRegistry;
+use Cake\Validation\Validator;
 
 class ApiAuthenticate extends BaseAuthenticate
 {
@@ -13,7 +15,7 @@ class ApiAuthenticate extends BaseAuthenticate
      * Default config for this object.
      *
      * - `fields` The fields to use to identify a user by.
-     * - `userModel` The alias for users table, defaults to Sessions.
+     * - `sessionModel` The alias for users table, defaults to Sessions.
      * - `finder` The finder method to use to fetch user record. Defaults to 'all'.
      *   You can set finder name as string or an array where key is finder name and value
      *   is an array passed to `Table::find()` options.
@@ -24,10 +26,12 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     protected $_defaultConfig = [
         'fields' => [
-            'token' => 'auth'
+            'token' => 'uuid'
         ],
-        'userModel' => 'Sessions',
-        'finder' => 'all',
+        'sessionModel' => 'Sessions',
+        'contain' => 'Users',
+        'fk_alias' => 'user',
+        'finder' => 'all'
     ];
 
     /**
@@ -51,37 +55,16 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     public function getUser(ServerRequest $request)
     {
-        $auth = $request->getHeader('name');
-        if (empty($auth) || !is_string($auth[0])) {
+        $auth = $request->getHeaderLine('auth');
+
+        $validator = new Validator();
+        $validator->uuid('auth');
+        $errors = $validator->errors(['auth' => $auth]);
+        if ($errors) {
             return false;
         }
 
-        return $this->_findUser($auth[0]);
-    }
-
-    /**
-     * Handles an unauthenticated access attempt by sending appropriate login headers
-     *
-     * @param \Cake\Http\ServerRequest $request A request object.
-     * @param \Cake\Http\Response $response A response object.
-     * @return void
-     * @throws \Cake\Network\Exception\UnauthorizedException
-     */
-    public function unauthenticated(ServerRequest $request, Response $response)
-    {
-    }
-
-    /**
-     * Generate the login headers
-     *
-     * @param \Cake\Http\ServerRequest $request Request object.
-     * @return string Headers for logging in.
-     */
-    public function loginHeaders(ServerRequest $request)
-    {
-        $realm = $this->getConfig('realm') ?: $request->env('SERVER_NAME');
-
-        return sprintf('WWW-Authenticate: Basic realm="%s"', $realm);
+        return $this->_findAuth($auth);
     }
 
     /**
@@ -98,7 +81,7 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     protected function _findAuth($token)
     {
-        $result = $this->_query($token)->first();
+        $result = $this->_query($token)->first()->user;
 
         if (empty($result)) {
             return false;
@@ -110,21 +93,18 @@ class ApiAuthenticate extends BaseAuthenticate
     /**
      * Get query object for fetching user from database.
      *
-     * @param string $token The username/identifier.
+     * @param string $token The identifier.
      * @return \Cake\ORM\Query
      */
     protected function _query($token)
     {
         $config = $this->_config;
-        $table = TableRegistry::get($config['userModel']);
+        $table = TableRegistry::get($config['sessionModel']);
 
         $options = [
             'conditions' => [$table->aliasField($config['fields']['token']) => $token]
         ];
 
-        if (!empty($config['scope'])) {
-            $options['conditions'] = array_merge($options['conditions'], $config['scope']);
-        }
         if (!empty($config['contain'])) {
             $options['contain'] = $config['contain'];
         }
@@ -140,6 +120,29 @@ class ApiAuthenticate extends BaseAuthenticate
         }
 
         return $table->find($finder, $options);
+    }
+
+    /**
+     * Handles an unauthenticated access attempt by sending appropriate login headers
+     *
+     * @param \Cake\Http\ServerRequest $request A request object.
+     * @param \Cake\Http\Response $response A response object.
+     * @return void
+     * @throws \Cake\Network\Exception\UnauthorizedException
+     */
+    public function unauthenticated(ServerRequest $request, Response $response)
+    {
+        throw new UnauthorizedException();
+    }
+
+    /**
+     * Generate the login headers
+     *
+     * @param \Cake\Http\ServerRequest $request Request object.
+     * @return string Headers for logging in.
+     */
+    public function loginHeaders(ServerRequest $request)
+    {
     }
 
 }

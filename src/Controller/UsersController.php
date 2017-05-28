@@ -8,6 +8,7 @@ use App\Model\Table\GendersTable;
 use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
+use Cake\Event\Event;
 use Cake\Http\Response;
 use Cake\I18n\Date;
 use Cake\I18n\FrozenDate;
@@ -29,17 +30,21 @@ use Eswipe\Utils\Uuid;
  */
 class UsersController extends ApiV1Controller
 {
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Auth->allow(['add']);
+    }
 
     public function logout()
     {
-        $auth = $this->request->getHeaderLine('auth');
-        $this->loadModel('Sessions');
+        $this->Auth->user();
 
         if (!Uuid::isValid($auth)) {
             throw new UnauthorizedException();
         }
 
-        $session = $this->Sessions->get($auth);
+        $session = $this->Sessions->findByUuid($auth)->first();
 
         if (is_null($session)) {
             throw new UnauthorizedException();
@@ -69,17 +74,17 @@ class UsersController extends ApiV1Controller
             || !is_string($userData['first_name'])
             || strlen($userData['first_name']) > 250
         ) {
-            throw new UnprocessedEntityException('unexpected "firstname"');
+            throw new UnprocessedEntityException('unexpected "last_name"');
         } else if (!array_key_exists('last_name', $userData)
             || !is_string($userData['last_name'])
             || strlen($userData['last_name']) > 250
         ) {
-            throw new UnprocessedEntityException('unexpected "firstname"');
+            throw new UnprocessedEntityException('unexpected "gender"');
         } else if (!array_key_exists('gender', $userData)
             || !is_string($userData['gender'])
             || strlen($userData['gender']) > 250
         ) {
-            throw new UnprocessedEntityException('unexpected "firstname"');
+            throw new UnprocessedEntityException('unexpected "date_of_birth"');
         } else if (!array_key_exists('date_of_birth', $userData)
             || !is_string($userData['date_of_birth'])
         ) {
@@ -104,9 +109,6 @@ class UsersController extends ApiV1Controller
         ) {
             throw new UnprocessedEntityException('unexpected "email"');
         }
-
-        $this->loadModel('Genders');
-        $this->loadModel('Sessions');
 
         if ($this->Users->findByEmail($userData['email'])->first()) {
             throw new ConflictException('user already exists');

@@ -29,6 +29,9 @@ class LoginController extends AppController
      */
     public function basic()
     {
+        $this->loadModel('Users');
+        $this->loadModel('Sessions');
+
         $email = $this->request->getQuery('email');
         $password = $this->request->getQuery('password');
         $instanceId = $this->request->getQuery('instance_id');
@@ -47,11 +50,10 @@ class LoginController extends AppController
             throw new UnprocessedEntityException($message);
         }
 
-        $this->loadModel('Users');
 
         /** @var User $user */
         $user = $this->Users->find()
-            ->select(['id', 'email', 'password'])
+            ->select(['id', 'password'])
             ->where(['email' => $email])
             ->first();
 
@@ -59,9 +61,9 @@ class LoginController extends AppController
             throw new UnauthorizedException();
         }
 
-        $user->instance_id = $instanceId;
 
-        $this->loadModel('Sessions');
+        $user->instance_id = $instanceId;
+        $this->Users->save($user);
 
         $session = $this->Sessions->find('all', ['condition' => ['user_id' => $user->id]])->first();
 
@@ -72,8 +74,7 @@ class LoginController extends AppController
             $this->Sessions->save($session);
         }
 
-        $token = new Token();
-        $token->auth = $session->uuid;
+        $token = new Token($session->uuid);
 
 
         return JsonBodyResponse::okResponse($this->response, $token);
@@ -130,8 +131,7 @@ class LoginController extends AppController
                 $this->Sessions->save($session);
             }
 
-            $token = new Token();
-            $token->auth = $session->uuid;
+            $token = new Token($session->uuid);
 
             return JsonBodyResponse::okResponse($this->response, $token);
         }
@@ -158,8 +158,7 @@ class LoginController extends AppController
         $session->user = $user;
         $this->Sessions->save($session);
 
-        $token = new Token();
-        $token->auth = $session->uuid;
+        $token = new Token($session->uuid);
 
         return JsonBodyResponse::createdResponse($this->response, $token);
 
