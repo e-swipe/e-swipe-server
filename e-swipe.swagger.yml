@@ -110,15 +110,7 @@ responses:
   422:
     description: 'FAIL: incorrect parameters'
     schema:
-      title: FieldError
-      type: object
-      properties:
-        code:
-          type: integer
-        field:
-          type: string
-        message:
-          type: string
+      $ref: '#/definitions/Error'
   default:
     description: Unexpected error
     schema:
@@ -544,7 +536,9 @@ paths:
             $ref: '#/definitions/Message'
       responses:
         201:
-          $ref: '#/responses/201'
+          description: 'SUCCESS: Created'
+          schema:
+            $ref: '#/definitions/Message'
         401:
           $ref: '#/responses/401'
         422:
@@ -928,7 +922,7 @@ definitions:
         format: int32
       message:
         type: string
-      fields:
+      url:
         type: string
   Position:
     title: Position
