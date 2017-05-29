@@ -123,8 +123,12 @@ class ProfilController extends ApiV1Controller
         //TODO :hexadecimales
     }
 
-    public function deletePhoto()
+    public function deletePhoto($uuid)
     {
+
+        $userId = $this->Auth->user('user_id');
+
+
         //TODO : delete photo
     }
 
@@ -135,6 +139,8 @@ class ProfilController extends ApiV1Controller
 
     public function getChats()
     {
+        $userId = $this->Auth->user('user_id');
+
         $chatsTable = TableRegistry::get('Chats');
         $message = DataValidator::validateGetChats($this->request);
         if (!is_null($message)) {
@@ -145,23 +151,23 @@ class ProfilController extends ApiV1Controller
         $limit = $this->request->getQuery('limit', 10);
 
 
-        $userid = $this->Auth->user('user_id');
 
         $chats = $chatsTable->find()
             ->contain('ChatsUsersMessages')
             ->contain([
                 'MatchedUsers' => [
-                    'queryBuilder' => function ($q) use ($userid) {
-                        return $q->where(['matcher_id' => $userid]);
+                    'queryBuilder' => function ($q) use ($userId) {
+                        return $q->where(['matcher_id' => $userId]);
                     },
                     'Images',
                 ],
             ])
-            ->matching('Matches', function ($q) use ($userid) {
+            ->matching('Matches', function ($q) use ($userId) {
                 /** @var Query $q */
-                return $q->where(['matcher_id' => $userid]);
+                return $q->where(['matcher_id' => $userId]);
             })
             ->limit($limit)->offset($offset);
+
         $chatCards = [];
         foreach ($chats as $chat) {
             $chatCards[] = new ChatCard($chat);
