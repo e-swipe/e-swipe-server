@@ -176,7 +176,6 @@ class UsersController extends ApiV1Controller
         // maj de la position de l'utilisateur :)
         $user->latitude = $latitude;
         $user->longitude = $longitude;
-
         $this->Users->save($user);
 
 
@@ -193,7 +192,7 @@ class UsersController extends ApiV1Controller
 
         $query = new QueryExpression();
         $query->between('Users.latitude', $bounding->minLat, $bounding->maxLat)
-            ->between('Users.longitude', $bounding->minLat, $bounding->maxLong)
+            ->between('Users.longitude', $bounding->minLong, $bounding->maxLong)
             ->notEq('Users.id', $user->id);
 
         if ($usersLookingFor) {
@@ -230,6 +229,8 @@ class UsersController extends ApiV1Controller
         foreach ($users as $userCard) {
             $usersCard[] = new UserCard($userCard);
         }
+
+        Log::info('[USERS][profils] found :'.sizeof($usersCard));
 
         return JsonBodyResponse::okResponse($this->response, $usersCard);
     }
