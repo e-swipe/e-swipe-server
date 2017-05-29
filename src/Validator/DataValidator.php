@@ -12,7 +12,9 @@ namespace App\Validator;
 use Cake\Http\ServerRequest;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use DateTime;
 
+// TODO https://book.cakephp.org/3.0/en/core-libraries/validation.html#creating-reusable-validators
 class DataValidator
 {
     public static function validateLoginFacebook(ServerRequest $request)
@@ -146,7 +148,13 @@ class DataValidator
         $validator = new Validator();
         $validator->requirePresence('content');
         // TODO : Voir ca avec antho :)
-        $validator->requirePresence('date')->dateTime('date');
+        $validator->requirePresence('date')->add('date', 'iso8601Date', [
+            'rule' => function ($value, $context) {
+                $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
+
+                return $d && $d->format(DateTime::ISO8601) == $value;
+            },
+        ]);
 
         return $validator;
     }
