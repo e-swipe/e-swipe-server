@@ -149,7 +149,7 @@ class DataValidator
         $validator->requirePresence('content');
         $validator->requirePresence('date')->add('date', 'iso8601Date', [
             'rule' => function ($value, $context) {
-                if ($value === 0) {
+                if ($value === '0') {
                     return true;
                 }
                 $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
