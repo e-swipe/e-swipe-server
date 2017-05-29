@@ -133,7 +133,16 @@ class DataValidator
         $validator = new Validator();
         $validator->allowEmpty('offset')->integer('offset')->greaterThanOrEqual('offset', 0);
         $validator->allowEmpty('limit')->integer('limit')->range('limit', [10, 200]);
-        $validator->allowEmpty('since')->dateTime('since');
+        $validator->allowEmpty('since')->add('since', 'iso8601Date', [
+            'rule' => function ($value, $context) {
+                if ($value === '0') {
+                    return true;
+                }
+                $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
+
+                return $d && $d->format(DateTime::ISO8601) == $value;
+            },
+        ]);
 
         return $validator;
     }
@@ -149,9 +158,6 @@ class DataValidator
         $validator->requirePresence('content');
         $validator->requirePresence('date')->add('date', 'iso8601Date', [
             'rule' => function ($value, $context) {
-                if ($value === '0') {
-                    return true;
-                }
                 $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
 
                 return $d && $d->format(DateTime::ISO8601) == $value;
