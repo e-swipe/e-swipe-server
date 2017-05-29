@@ -12,7 +12,6 @@ namespace App\Validator;
 use Cake\Http\ServerRequest;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use DateTime;
 
 // TODO https://book.cakephp.org/3.0/en/core-libraries/validation.html#creating-reusable-validators
 class DataValidator
@@ -133,16 +132,9 @@ class DataValidator
         $validator = new Validator();
         $validator->allowEmpty('offset')->integer('offset')->greaterThanOrEqual('offset', 0);
         $validator->allowEmpty('limit')->integer('limit')->range('limit', [10, 200]);
-        $validator->allowEmpty('since')->add('since', 'iso8601Date', [
-            'rule' => function ($value, $context) {
-                if ($value === '0') {
-                    return true;
-                }
-                $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
-
-                return $d && $d->format(DateTime::ISO8601) == $value;
-            },
-        ]);
+        $validator->allowEmpty('since')->dateTime('since', ['ymd'], null, function ($context) {
+            return $context['data']['since'] != 0;
+        });
 
         return $validator;
     }
@@ -156,13 +148,9 @@ class DataValidator
     {
         $validator = new Validator();
         $validator->requirePresence('content');
-        $validator->requirePresence('date')->add('date', 'iso8601Date', [
-            'rule' => function ($value, $context) {
-                $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
-
-                return $d && $d->format(DateTime::ISO8601) == $value;
-            },
-        ]);
+        $validator->requirePresence('date')->dateTime('date', ['ymd'], null, function ($context) {
+            return $context['data']['date'] != 0;
+        });
 
         return $validator;
     }
