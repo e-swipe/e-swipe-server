@@ -9,8 +9,6 @@
 namespace Eswipe\Model;
 
 
-use Cake\Utility\Hash;
-
 class EventCard
 {
     public $uuid;
@@ -24,12 +22,12 @@ class EventCard
      */
     public function __construct($eventCard)
     {
-        $this->uuid = $eventCard['id'];
-        $this->name = $eventCard['name'];
-        $pictures = Hash::sort($eventCard['images'], '{n}._joinData.order', 'asc');
-        if (!empty($pictures)) {
-            $this->picture_url = $pictures[0]['url'];
+        $this->uuid = $eventCard->id;
+        $this->name = $eventCard->name;
+
+        if (!empty($eventCard->images)) {
+            $this->picture_url = $eventCard->images[0]->url;
         }
-        $this->position = new Position($eventCard['latitude'], $eventCard['longitude']);
+        $this->position = new Position($eventCard->latitude, $eventCard->longitude);
     }
 }

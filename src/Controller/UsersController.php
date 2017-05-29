@@ -238,12 +238,11 @@ class UsersController extends ApiV1Controller
                 /** @var Query $q */
                 return $q->where(['Declined.decliner_id' => $userId]);
             })
-            ->limit(10)->all();
+            ->limit(10);
 
         $usersCard = [];
         foreach ($users as $userCard) {
-            $userCard->date_of_birth = $userCard->date_of_birth->format('m/d/Y');
-            $usersCard[] = new UserCard($userCard->toArray());
+            $usersCard[] = new UserCard($userCard);
         }
 
         return JsonBodyResponse::okResponse($this->response, $usersCard);

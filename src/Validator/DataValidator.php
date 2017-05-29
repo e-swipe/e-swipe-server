@@ -112,4 +112,13 @@ class DataValidator
         return self::toStringValidationErrors($validator, $request->getQueryParams());
     }
 
+    public static function validateGetChats(ServerRequest $request)
+    {
+        $validator = new Validator();
+        $validator->allowEmpty('offset')->integer('offset')->greaterThanOrEqual('offset', 0);
+        $validator->allowEmpty('limit')->integer('limit')->range('limit', [10, 200]);
+
+        return self::toStringValidationErrors($validator, $request->getQueryParams());
+    }
+
 }

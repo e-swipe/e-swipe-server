@@ -43,14 +43,22 @@ class ChatsTable extends Table
             'ChatsUsersMessages',
             [
                 'foreignKey' => 'chat_id',
+                'sort' => ['ChatsUsersMessages.created_at' => 'DESC'],
             ]
         );
+
         $this->hasMany(
             'Matches',
             [
                 'foreignKey' => 'chat_id',
-            ]
-        );
+            ]);
+
+        $this->belongsToMany('MatchedUsers', [
+            'className' => 'Users',
+            'foreignKey' => 'chat_id',
+            'targetForeignKey' => 'matched_id',
+            'joinTable' => 'matches',
+        ]);
     }
 
     /**

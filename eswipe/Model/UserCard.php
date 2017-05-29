@@ -18,15 +18,15 @@ class UserCard
     public $picture_url;
     public $position;
 
-    public function __construct(array $userCard)
+    public function __construct($userCard)
     {
-        $this->uuid = $userCard['id'];
-        $this->first_name = $userCard['firstname'];
-        $this->last_name = $userCard['lastname'];
-        $this->date_of_birth = $userCard['date_of_birth'];
-        if (!empty($userCard['images'])) {
-            $this->picture_url = $userCard['images'][0]['url'];
+        $this->uuid = $userCard->id;
+        $this->first_name = $userCard->firstname;
+        $this->last_name = $userCard->lastname;
+        $this->date_of_birth = $userCard->date_of_birth_mdy;
+        if (!empty($userCard->images)) {
+            $this->picture_url = $userCard->images[0]->url;
         }
-        $this->position = new Position($userCard['latitude'], $userCard['longitude']);
+        $this->position = new Position($userCard->latitude, $userCard->longitude);
     }
 }

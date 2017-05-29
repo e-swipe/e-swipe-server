@@ -60,6 +60,11 @@ class User extends Entity
         'password',
     ];
 
+    public function _getDateOfBirthMdy()
+    {
+        return $this->date_of_birth->format('m/d/Y');
+    }
+
     protected function _setPassword($password)
     {
         return (new DefaultPasswordHasher)->hash($password);

@@ -59,6 +59,7 @@ class EventsTable extends Table
                 'foreignKey' => 'event_id',
                 'targetForeignKey' => 'image_id',
                 'joinTable' => 'events_images',
+                'sort' => ['ImagesUsers.order' => 'ASC'],
             ]
         );
         $this->belongsToMany(

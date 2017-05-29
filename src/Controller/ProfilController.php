@@ -14,6 +14,9 @@ use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
 use Cake\I18n\FrozenDate;
+use Cake\ORM\Query;
+use Cake\ORM\TableRegistry;
+use Eswipe\Model\ChatCard;
 use Eswipe\Model\UserInfo;
 
 /**
@@ -39,8 +42,7 @@ class ProfilController extends ApiV1Controller
             ]
         );
 
-        $user->date_of_birth = $user->date_of_birth->format('m/d/Y');
-        $userInfo = new UserInfo($user->toArray());
+        $userInfo = new UserInfo($user);
 
         return JsonBodyResponse::okResponse($this->response, $userInfo);
     }
@@ -129,5 +131,43 @@ class ProfilController extends ApiV1Controller
     public function updatePhotosOrder()
     {
         //TODO: updatePhotosOrder
+    }
+
+    public function getChats()
+    {
+        $chatsTable = TableRegistry::get('Chats');
+        $message = DataValidator::validateGetChats($this->request);
+        if (!is_null($message)) {
+            throw new UnprocessedEntityException($message); //422
+        }
+
+        $offset = $this->request->getQuery('offset', 0);
+        $limit = $this->request->getQuery('limit', 10);
+
+
+        $userid = $this->Auth->user('user_id');
+
+        $chats = $chatsTable->find()
+            ->contain('ChatsUsersMessages')
+            ->contain([
+                'MatchedUsers' => [
+                    'queryBuilder' => function ($q) use ($userid) {
+                        return $q->where(['matcher_id' => $userid]);
+                    },
+                    'Images',
+                ],
+            ])
+            ->matching('Matches', function ($q) use ($userid) {
+                /** @var Query $q */
+                return $q->where(['matcher_id' => $userid]);
+            })
+            ->limit($limit)->offset($offset);
+        $chatCards = [];
+        foreach ($chats as $chat) {
+            $chatCards[] = new ChatCard($chat);
+        }
+
+        return JsonBodyResponse::okResponse($this->response, $chatCards);
+
     }
 }

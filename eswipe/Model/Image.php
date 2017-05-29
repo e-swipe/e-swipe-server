@@ -19,10 +19,10 @@ class Image
      * Image constructor.
      * @param array $image
      */
-    public function __construct(array $image)
+    public function __construct($image)
     {
-        $this->uuid = $image['uuid'];
-        $this->url = $image['url'];
-        $this->order = $image['_joinData']['order'];
+        $this->uuid = $image->uuid;
+        $this->url = $image->url;
+        $this->order = $image->_joinData->order;
     }
 }
