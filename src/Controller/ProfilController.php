@@ -38,7 +38,7 @@ class ProfilController extends ApiV1Controller
         $user = $this->Users->get(
             $user_id,
             [
-                'contain' => ['LookingFor', 'Genders', 'Images', 'Events' => ['Images']],
+                'contain' => ['LookingFor', 'Genders', 'Images', 'AcceptedEvents' => ['Images']],
             ]
         );
 

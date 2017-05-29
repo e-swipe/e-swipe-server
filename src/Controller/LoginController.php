@@ -136,7 +136,7 @@ class LoginController extends AppController
 
             $token = new Token($session->uuid);
 
-            Log::info('[LOGIN][facebook][200]['.$user->id.']'.$session->uuid.":".$user->facebook_id);
+            Log::info('[LOGIN][facebook][200]['.$user->id.'] '.$session->uuid." : ".$user->facebook_id);
 
             return JsonBodyResponse::okResponse($this->response, $token);
         }
@@ -169,7 +169,7 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
-        Log::info('[LOGIN][facebook][201]['.$user->id.']'.$session->uuid.' : '.$user->facebook_id);
+        Log::info('[LOGIN][facebook][201]['.$user->id.'] '.$session->uuid.' : '.$user->facebook_id);
 
         return JsonBodyResponse::createdResponse($this->response, $token);
     }

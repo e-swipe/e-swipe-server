@@ -11,9 +11,9 @@ class Image
 
     /**
      * Image constructor.
-     * @param array $image
+     * @param \App\Model\Entity\Image $image
      */
-    public function __construct($image)
+    public function __construct(\App\Model\Entity\Image $image)
     {
         $this->uuid = $image->uuid;
         $this->url = $image->url;

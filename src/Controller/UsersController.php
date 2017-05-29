@@ -230,7 +230,7 @@ class UsersController extends ApiV1Controller
             $usersCard[] = new UserCard($userCard);
         }
 
-        Log::info('[USERS][profils] found :'.sizeof($usersCard));
+        Log::info('[USERS][profils]['.$userId.'] rad='.$radius.' | found='.sizeof($usersCard));
 
         return JsonBodyResponse::okResponse($this->response, $usersCard);
     }
@@ -268,7 +268,7 @@ class UsersController extends ApiV1Controller
 
         $this->Accepts->save($acceptedEntity);
 
-        Log::info('[USERS][accept]: '.$meId.'<->'.$user->id);
+        Log::info('[USERS][accept] '.$meId.'-->'.$user->id);
 
         if ($this->Accepts->findByAccepterIdAndAcceptedId($user->id, $meId)->first()) {
             // It's a match :)
@@ -323,7 +323,7 @@ class UsersController extends ApiV1Controller
 
         $this->Declines->save($declinedEntity);
 
-        Log::info('[USERS][decline]: '.$meId.'<->'.$user->id);
+        Log::info('[USERS][decline] '.$meId.'-->'.$user->id);
 
         return $this->response->withStatus(204);
 

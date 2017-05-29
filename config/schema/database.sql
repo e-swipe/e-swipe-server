@@ -127,14 +127,15 @@ CREATE TABLE IF NOT EXISTS `declines` (
 DROP TABLE IF EXISTS `events`;
 
 CREATE TABLE IF NOT EXISTS `events` (
-    `id`          INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `name`        VARCHAR(250) NOT NULL,
-    `description` VARCHAR(500) NOT NULL,
-    `date_begin`  DATETIME     NOT NULL,
-    `date_end`    DATETIME     NOT NULL,
-    `latitude`    DOUBLE       NULL,
-    `longitude`   DOUBLE       NULL,
-    `is_visible`  TINYINT      NOT NULL DEFAULT 1,
+    `id`           INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name`         VARCHAR(250) NOT NULL,
+    `description`  VARCHAR(500) NOT NULL,
+    `date_begin`   DATETIME     NOT NULL,
+    `date_end`     DATETIME     NOT NULL,
+    `latitude`     DOUBLE       NULL,
+    `longitude`    DOUBLE       NULL,
+    `is_visible`   TINYINT      NOT NULL DEFAULT 1,
+    `user_count` INT UNSIGNED NOT NULL DEFAULT 0,
     UNIQUE INDEX `id_UNIQUE` (`id` ASC),
     PRIMARY KEY (`id`)
 );

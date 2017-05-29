@@ -4,6 +4,7 @@
 namespace Eswipe\Model;
 
 
+use App\Model\Entity\User;
 use Cake\Utility\Hash;
 
 class UserInfo
@@ -24,12 +25,12 @@ class UserInfo
     public $events;
 
 
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->uuid = $user->id;
         $this->first_name = $user->firstname;
         $this->last_name = $user->lastname;
-        $this->date_of_birth = $user->date_of_birth_mdy;
+        $this->age = $user->age;
         $this->description = $user->description;
         $this->gender = $user->gender->name;
         $this->looking_for = Hash::extract($user->looking_for, '{n}.name');
@@ -48,7 +49,7 @@ class UserInfo
         }
 
         $this->events = [];
-        foreach ($user->events as $event) {
+        foreach ($user->accepted_events as $event) {
             $this->events[] = new EventCard($event);
         }
     }

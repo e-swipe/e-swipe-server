@@ -70,6 +70,7 @@ class EventsTable extends Table
                 'joinTable' => 'events_interests',
             ]
         );
+
     }
 
     /**

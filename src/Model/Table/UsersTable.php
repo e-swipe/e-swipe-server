@@ -16,12 +16,12 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\HasMany $AcceptedUser
  * @property \Cake\ORM\Association\HasMany $DeclinedUser
  * @property \Cake\ORM\Association\HasMany $MatchedUser
- * @property \Cake\ORM\Association\HasMany $EventsUsersAccept
- * @property \Cake\ORM\Association\HasMany $EventsUsersDeny
  * @property \Cake\ORM\Association\HasMany $Sessions
  * @property \Cake\ORM\Association\HasMany $UsersGendersLookingFor
  * @property \Cake\ORM\Association\BelongsToMany $Images
  * @property \Cake\ORM\Association\BelongsToMany $LookingFor
+ * @property \Cake\ORM\Association\BelongsToMany $AcceptedEvents
+ * @property \Cake\ORM\Association\BelongsToMany $DeniedEvents
  * @property \Cake\ORM\Association\BelongsToMany $Interests
  * @property \Cake\ORM\Association\BelongsToMany $Chats
  *
@@ -75,12 +75,6 @@ class UsersTable extends Table
         $this->hasMany('ChatsUsersMessages', [
             'foreignKey' => 'user_id',
         ]);
-        $this->hasMany('EventsUsersAccept', [
-            'foreignKey' => 'user_id',
-        ]);
-        $this->hasMany('EventsUsersDeny', [
-            'foreignKey' => 'user_id',
-        ]);
         $this->hasMany('Sessions', [
             'foreignKey' => 'user_id',
         ]);
@@ -88,11 +82,18 @@ class UsersTable extends Table
             'foreignKey' => 'user_id',
         ]);
 
-        $this->belongsToMany('Events', [
+        $this->belongsToMany('AcceptedEvents', [
             'className' => 'Events',
             'foreignKey' => 'user_id',
             'targetForeignKey' => 'event_id',
             'joinTable' => 'events_users_accept',
+        ]);
+
+        $this->belongsToMany('DeniedEvents', [
+            'className' => 'Events',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'event_id',
+            'joinTable' => 'events_users_deny',
         ]);
 
         $this->belongsToMany('LookingFor', [
