@@ -289,7 +289,7 @@ class UsersController extends ApiV1Controller
             $this->Matches->save($matchUserToMe);
             $this->Matches->save($matchMeToUser);
 
-            Log::info('[USERS][match]: new match : '.$chat->id.'=> ['.$meId.'<->'.$user->id.']');
+            Log::info('[USERS][match] '.$chat->id.' => ['.$meId.'<->'.$user->id.']');
         }
 
         return $this->response->withStatus(204);
@@ -320,7 +320,6 @@ class UsersController extends ApiV1Controller
         $declinedEntity = $this->Declines->newEntity();
         $declinedEntity->decliner_id = $meId;
         $declinedEntity->declined_id = $user->id;
-
         $this->Declines->save($declinedEntity);
 
         Log::info('[USERS][decline] '.$meId.'-->'.$user->id);

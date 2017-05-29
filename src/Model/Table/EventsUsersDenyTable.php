@@ -1,27 +1,26 @@
 <?php
-
 namespace App\Model\Table;
 
-use App\Model\Entity\EventsUsersAccept;
-use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Validation\Validator;
 
 /**
- * EventsUsersAccept Model
+ * EventsUsersDeny Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Events
  *
- * @method EventsUsersAccept get($primaryKey, $options = [])
- * @method EventsUsersAccept newEntity($data = null, array $options = [])
- * @method EventsUsersAccept[] newEntities(array $data, array $options = [])
- * @method EventsUsersAccept|bool save(EntityInterface $entity, $options = [])
- * @method EventsUsersAccept patchEntity(EntityInterface $entity, array $data, array $options = [])
- * @method EventsUsersAccept[] patchEntities($entities, array $data, array $options = [])
- * @method EventsUsersAccept findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny get($primaryKey, $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\EventsUsersDeny findOrCreate($search, callable $callback = null, $options = [])
  */
-class EventsUsersAcceptTable extends Table
+class EventsUsersDenyTable extends Table
 {
 
     /**
@@ -34,23 +33,17 @@ class EventsUsersAcceptTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('events_users_accept');
+        $this->setTable('events_users_deny');
         $this->setDisplayField('user_id');
         $this->setPrimaryKey(['user_id', 'event_id']);
 
         $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
-            'joinType' => 'INNER',
+            'joinType' => 'INNER'
         ]);
         $this->belongsTo('Events', [
             'foreignKey' => 'event_id',
-            'joinType' => 'INNER',
-        ]);
-
-        $this->addBehavior('CounterCache', [
-            'Events' => [
-                'user_count',
-            ],
+            'joinType' => 'INNER'
         ]);
     }
 
