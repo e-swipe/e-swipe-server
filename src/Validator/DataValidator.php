@@ -147,9 +147,11 @@ class DataValidator
     {
         $validator = new Validator();
         $validator->requirePresence('content');
-        // TODO : Voir ca avec antho :)
         $validator->requirePresence('date')->add('date', 'iso8601Date', [
             'rule' => function ($value, $context) {
+                if ($value === 0) {
+                    return true;
+                }
                 $d = DateTime::createFromFormat(DateTime::ISO8601, $value);
 
                 return $d && $d->format(DateTime::ISO8601) == $value;
