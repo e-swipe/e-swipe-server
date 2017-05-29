@@ -43,7 +43,10 @@ class ChatsTable extends Table
             'ChatsUsersMessages',
             [
                 'foreignKey' => 'chat_id',
-                'sort' => ['ChatsUsersMessages.created_at' => 'DESC'],
+                'sort' => [
+                    'ChatsUsersMessages.created_at' => 'DESC',
+                    'ChatsUsersMessages.id' => 'DESC',
+                ],
             ]
         );
 

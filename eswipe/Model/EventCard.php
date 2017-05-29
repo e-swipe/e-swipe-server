@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: stardisblue
- * Date: 27/05/2017
- * Time: 23:00
- */
+
 
 namespace Eswipe\Model;
 

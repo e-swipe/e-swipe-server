@@ -121,4 +121,34 @@ class DataValidator
         return self::toStringValidationErrors($validator, $request->getQueryParams());
     }
 
+    public static function validateChatGet(ServerRequest $request)
+    {
+        return self::toStringValidationErrors(self::chatValidator(), $request->getQueryParams());
+    }
+
+    private static function chatValidator()
+    {
+        $validator = new Validator();
+        $validator->allowEmpty('offset')->integer('offset')->greaterThanOrEqual('offset', 0);
+        $validator->allowEmpty('limit')->integer('limit')->range('limit', [10, 200]);
+        $validator->allowEmpty('since')->dateTime('since');
+
+        return $validator;
+    }
+
+    public static function validateChatAddMessage(ServerRequest $request)
+    {
+        return self::toStringValidationErrors(self::messageValidator(), $request->getData());
+    }
+
+    private static function messageValidator()
+    {
+        $validator = new Validator();
+        $validator->requirePresence('content');
+        // TODO : Voir ca avec antho :)
+        $validator->requirePresence('date')->dateTime('date');
+
+        return $validator;
+    }
+
 }

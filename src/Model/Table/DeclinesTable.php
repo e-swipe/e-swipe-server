@@ -2,6 +2,8 @@
 
 namespace App\Model\Table;
 
+use App\Model\Entity\Decline;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 
@@ -11,13 +13,13 @@ use Cake\ORM\Table;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $DeclinedUsers
  *
- * @method \App\Model\Entity\Decline get($primaryKey, $options = [])
- * @method \App\Model\Entity\Decline newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Decline[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Decline|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Decline patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Decline[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Decline findOrCreate($search, callable $callback = null, $options = [])
+ * @method Decline get($primaryKey, $options = [])
+ * @method Decline newEntity($data = null, array $options = [])
+ * @method Decline[] newEntities(array $data, array $options = [])
+ * @method Decline|bool save(EntityInterface $entity, $options = [])
+ * @method Decline patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Decline[] patchEntities($entities, array $data, array $options = [])
+ * @method Decline findOrCreate($search, callable $callback = null, $options = [])
  */
 class DeclinesTable extends Table
 {

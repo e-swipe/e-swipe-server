@@ -4,12 +4,7 @@ namespace Eswipe\Utils;
 
 use Cake\Utility\Text;
 
-/**
- * Created by PhpStorm.
- * User: stardisblue
- * Date: 26/05/2017
- * Time: 23:49
- */
+
 class Uuid
 {
     public static function toByte($uuid)
