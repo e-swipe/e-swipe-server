@@ -133,7 +133,8 @@ class UsersController extends ApiV1Controller
         $user->max_age = $user->date_of_birth->age + 10;
         $user->min_age = $user->date_of_birth->age > 28 ? $user->date_of_birth->age - 10 : 18;
 
-        $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
+        $gendersTable = TableRegistry::get('Genders');
+        $user->gender = $gendersTable->find('all', ['name' => $userData['gender']])->first();
 
         $sessionsTable = TableRegistry::get('Sessions');
         $session = $sessionsTable->newEntity();
