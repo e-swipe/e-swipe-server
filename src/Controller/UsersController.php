@@ -9,7 +9,6 @@ use App\Model\Table\ChatsTable;
 use App\Model\Table\DeclinesTable;
 use App\Model\Table\GendersTable;
 use App\Model\Table\MatchesTable;
-use App\Model\Table\SessionsTable;
 use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
@@ -23,6 +22,7 @@ use Cake\Log\Log;
 use Cake\Network\Exception\ConflictException;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\Query;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Text;
 use Cake\Validation\Validation;
@@ -34,7 +34,6 @@ use Eswipe\Utils\Coordinates;
  * Users Controller
  *
  * @property UsersTable $Users
- * @property SessionsTable Sessions
  * @property GendersTable Genders
  * @property ChatsTable Chats
  * @property AcceptsTable Accepts
@@ -53,16 +52,17 @@ class UsersController extends ApiV1Controller
 
     public function logout()
     {
+        $sessionTable = TableRegistry::get('Sessions');
         $userId = $this->Auth->user('user_id');
 
-        $session = $this->Sessions->findByUserId($userId)->first();
-        $this->Sessions->delete($session);
-
-        $response = $this->response->withStatus(204);
+        $session = $sessionTable->findByUserId($userId)->first();
+        $sessionTable->delete($session);
 
         $this->Auth->logout();
 
-        return $response;
+        Log::info('[USER][logout][204]['.$userId.']'.$session->uuid);
+
+        return $this->response->withStatus(204);
     }
 
     /**
@@ -73,65 +73,49 @@ class UsersController extends ApiV1Controller
         $instanceId = $this->request->getQuery('instance_id');
         $userData = $this->request->getData();
 
-
         if (empty($userData)) {
             throw new UnprocessedEntityException('incorrect data');
-        } else {
-            if (!is_string($instanceId) || strlen($instanceId) > 250
-            ) {
-                throw new UnprocessedEntityException('unexpected "instance_id"');
-            } else {
-                if (!array_key_exists('first_name', $userData)
-                    || !is_string($userData['first_name'])
-                    || strlen($userData['first_name']) > 250
-                ) {
-                    throw new UnprocessedEntityException('unexpected "last_name"');
-                } else {
-                    if (!array_key_exists('last_name', $userData)
-                        || !is_string($userData['last_name'])
-                        || strlen($userData['last_name']) > 250
-                    ) {
-                        throw new UnprocessedEntityException('unexpected "gender"');
-                    } else {
-                        if (!array_key_exists('gender', $userData)
-                            || !is_string($userData['gender'])
-                            || strlen($userData['gender']) > 250
-                        ) {
-                            throw new UnprocessedEntityException('unexpected "date_of_birth"');
-                        } else {
-                            if (!array_key_exists('date_of_birth', $userData)
-                                || !is_string($userData['date_of_birth'])
-                            ) {
-                                $date = FrozenDate::parseDate($userData['date_of_birth']);
+        } elseif (!is_string($instanceId) || strlen($instanceId) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "instance_id"');
+        } elseif (!array_key_exists('first_name', $userData)
+            || !is_string($userData['first_name'])
+            || strlen($userData['first_name']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "last_name"');
+        } elseif (!array_key_exists('last_name', $userData)
+            || !is_string($userData['last_name'])
+            || strlen($userData['last_name']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "gender"');
+        } elseif (!array_key_exists('gender', $userData)
+            || !is_string($userData['gender'])
+            || strlen($userData['gender']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "date_of_birth"');
+        } elseif (!array_key_exists('date_of_birth', $userData)
+            || !is_string($userData['date_of_birth'])
+        ) {
+            $date = FrozenDate::parseDate($userData['date_of_birth']);
 
-                                if (!$date) {
-                                    throw new UnprocessedEntityException('unexpected "date"');
-                                }
-
-                                if ($date->diff(Date::now())->y < 18) {
-                                    throw new UnprocessedEntityException('unexpected "age"');
-                                }
-
-                            } else {
-                                if (!array_key_exists('email', $userData)
-                                    || !is_string($userData['email'])
-                                    || !Validation::email($userData['email'])
-                                ) {
-                                    throw new UnprocessedEntityException('unexpected "email"');
-                                } else {
-                                    if (!array_key_exists('password', $userData)
-                                        || !is_string($userData['password'])
-                                        || strlen($userData['password']) > 250
-                                    ) {
-                                        throw new UnprocessedEntityException('unexpected "password"');
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            if (!$date) {
+                throw new UnprocessedEntityException('unexpected "date"');
+            } elseif ($date->diff(Date::now())->y < 18) {
+                throw new UnprocessedEntityException('unexpected "age"');
             }
+
+        } elseif (!array_key_exists('email', $userData)
+            || !is_string($userData['email'])
+            || !Validation::email($userData['email'])
+        ) {
+            throw new UnprocessedEntityException('unexpected "email"');
+        } elseif (!array_key_exists('password', $userData)
+            || !is_string($userData['password'])
+            || strlen($userData['password']) > 250
+        ) {
+            throw new UnprocessedEntityException('unexpected "password"');
         }
+
 
         if ($this->Users->findByEmail($userData['email'])->first()) {
             throw new ConflictException('user already exists');
@@ -151,15 +135,17 @@ class UsersController extends ApiV1Controller
 
         $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
 
-
-        $session = $this->Sessions->newEntity();
+        $sessionsTable = TableRegistry::get('Sessions');
+        $session = $sessionsTable->newEntity();
         $session->uuid = Text::uuid();
         $session->user = $this->Users->save($user);
 
-        $this->Sessions->save($session);
+        $sessionsTable->save($session);
 
         $token = new Token();
         $token->auth = $session->uuid;
+
+        Log::info('[LOGIN][create][201]['.$user->id.']: '.$session->uuid);
 
         return JsonBodyResponse::createdResponse($this->response, $token);
     }
@@ -301,8 +287,8 @@ class UsersController extends ApiV1Controller
 
             $this->Matches->save($matchUserToMe);
             $this->Matches->save($matchMeToUser);
-            Log::info('[USERS][match]: new match : '.$chat->id.'=> ['.$meId.'<->'.$user->id.']');
 
+            Log::info('[USERS][match]: new match : '.$chat->id.'=> ['.$meId.'<->'.$user->id.']');
         }
 
         return $this->response->withStatus(204);
@@ -349,7 +335,7 @@ class UsersController extends ApiV1Controller
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    /*public function edit($id = null)
     {
         $user = $this->Users->get($id, [
             'contain' => ['Images', 'Interests'],
@@ -368,7 +354,7 @@ class UsersController extends ApiV1Controller
         $interests = $this->Users->Interests->find('list', ['limit' => 200]);
         $this->set(compact('user', 'genders', 'images', 'interests'));
         $this->set('_serialize', ['user']);
-    }
+    }*/
 
     /**
      * Delete method
@@ -377,7 +363,7 @@ class UsersController extends ApiV1Controller
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    /*public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
@@ -388,5 +374,5 @@ class UsersController extends ApiV1Controller
         }
 
         return $this->redirect(['action' => 'index']);
-    }
+    }*/
 }

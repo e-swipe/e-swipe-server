@@ -37,22 +37,15 @@ class LoginController extends AppController
         $password = $this->request->getQuery('password');
         $instanceId = $this->request->getQuery('instance_id');
 
-        if (!Validation::email($email) || !is_string($password) || strlen($password) > 250 || !is_string(
-                $instanceId
-            ) || strlen($instanceId) > 250
-        ) {
+        if (!Validation::email($email) || !is_string($password) || strlen($password) > 250 || !is_string($instanceId) || strlen($instanceId) > 250) {
 
             $message = null;
             if (!Validation::email($email)) {
                 $message = 'not an "email"';
-            } else {
-                if (!is_string($password) || strlen($password) > 250) {
-                    $message = 'unauthorized "password" type';
-                } else {
-                    if (!is_string($instanceId) || strlen($instanceId) > 250) {
-                        $message = 'unauthorized "instance_id" type';
-                    }
-                }
+            } elseif (!is_string($password) || strlen($password) > 250) {
+                $message = 'unauthorized "password" type';
+            } elseif (!is_string($instanceId) || strlen($instanceId) > 250) {
+                $message = 'unauthorized "instance_id" type';
             }
 
             throw new UnprocessedEntityException($message);
@@ -115,7 +108,6 @@ class LoginController extends AppController
 
         $facebookData = $answer->json;
         if (array_key_exists('error', $facebookData)) {
-            debug($facebookData);
             throw new UnauthorizedException($facebookData['error']['message']);
         }
 
@@ -128,7 +120,8 @@ class LoginController extends AppController
             $user->lastname = $userData['last_name'];
             $user->email = $userData['email'];
             $user->date_of_birth = FrozenDate::parseDate($userData['date_of_birth']);
-            $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])->first();
+            $user->gender = $this->Genders->find('all', ['name' => $userData['gender']])
+                ->first();
             $user->instance_id = $instanceId;
 
             $this->Users->save($user);
@@ -179,7 +172,5 @@ class LoginController extends AppController
         Log::info('[LOGIN][facebook][201]['.$user->id.']'.$session->uuid.' : '.$user->facebook_id);
 
         return JsonBodyResponse::createdResponse($this->response, $token);
-
-
     }
 }

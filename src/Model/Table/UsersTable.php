@@ -52,119 +52,77 @@ class UsersTable extends Table
 
 
         // TODO : refactor that :) change matching
-        $this->hasMany(
-            'Accepted',
-            [
-                'className' => 'Accepts',
-                'foreignKey' => 'accepted_id',
-            ]
-        );
+        $this->hasMany('Accepted', [
+            'className' => 'Accepts',
+            'foreignKey' => 'accepted_id',
+        ]);
 
-        $this->hasMany(
-            'Declined',
-            [
-                'className' => 'Declines',
-                'foreignKey' => 'declined_id',
-            ]
-        );
+        $this->hasMany('Declined', [
+            'className' => 'Declines',
+            'foreignKey' => 'declined_id',
+        ]);
 
-        $this->hasMany(
-            'Matched',
-            [
-                'className' => 'Matches',
-                'foreignKey' => 'matched_id',
-            ]
-        );
+        $this->hasMany('Matched', [
+            'className' => 'Matches',
+            'foreignKey' => 'matched_id',
+        ]);
 
-        $this->belongsTo(
-            'Genders',
-            [
-                'foreignKey' => 'gender_id',
-                'joinType' => 'INNER',
-            ]
-        );
+        $this->belongsTo('Genders', [
+            'foreignKey' => 'gender_id',
+            'joinType' => 'INNER',
+        ]);
 
-        $this->hasMany(
-            'ChatsUsersMessages',
-            [
-                'foreignKey' => 'user_id',
-            ]
-        );
-        $this->hasMany(
-            'EventsUsersAccept',
-            [
-                'foreignKey' => 'user_id',
-            ]
-        );
-        $this->hasMany(
-            'EventsUsersDeny',
-            [
-                'foreignKey' => 'user_id',
-            ]
-        );
-        $this->hasMany(
-            'Sessions',
-            [
-                'foreignKey' => 'user_id',
-            ]
-        );
-        $this->hasMany(
-            'UsersGendersLookingFor',
-            [
-                'foreignKey' => 'user_id',
-            ]
-        );
+        $this->hasMany('ChatsUsersMessages', [
+            'foreignKey' => 'user_id',
+        ]);
+        $this->hasMany('EventsUsersAccept', [
+            'foreignKey' => 'user_id',
+        ]);
+        $this->hasMany('EventsUsersDeny', [
+            'foreignKey' => 'user_id',
+        ]);
+        $this->hasMany('Sessions', [
+            'foreignKey' => 'user_id',
+        ]);
+        $this->hasMany('UsersGendersLookingFor', [
+            'foreignKey' => 'user_id',
+        ]);
 
-        $this->belongsToMany(
-            'Events',
-            [
-                'className' => 'Events',
-                'foreignKey' => 'user_id',
-                'targetForeignKey' => 'event_id',
-                'joinTable' => 'events_users_accept',
-            ]
-        );
+        $this->belongsToMany('Events', [
+            'className' => 'Events',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'event_id',
+            'joinTable' => 'events_users_accept',
+        ]);
 
-        $this->belongsToMany(
-            'LookingFor',
-            [
-                'className' => 'Genders',
-                'foreignKey' => 'user_id',
-                'targetForeignKey' => 'gender_id',
-                'joinTable' => 'users_genders_looking_for',
-            ]
-        );
+        $this->belongsToMany('LookingFor', [
+            'className' => 'Genders',
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'gender_id',
+            'joinTable' => 'users_genders_looking_for',
+        ]);
 
-        $this->belongsToMany(
-            'Chats',
-            [
-                'className' => 'Chats',
-                'foreignKey' => 'matcher_id',
-                'targetForeignKey' => 'chats_id',
-                'joinTable' => 'matches',
-            ]
-        );
+        $this->belongsToMany('Chats', [
+            'className' => 'Chats',
+            'foreignKey' => 'matcher_id',
+            'targetForeignKey' => 'chats_id',
+            'joinTable' => 'matches',
+        ]);
 
 
         //TODO: https://book.cakephp.org/3.0/fr/orm/associations.html#associations-belongstomany
         //order by asc
-        $this->belongsToMany(
-            'Images',
-            [
-                'foreignKey' => 'user_id',
-                'targetForeignKey' => 'image_id',
-                'joinTable' => 'images_users',
-                'sort' => ['ImagesUsers.order' => 'ASC'],
-            ]
-        );
-        $this->belongsToMany(
-            'Interests',
-            [
-                'foreignKey' => 'user_id',
-                'targetForeignKey' => 'interest_id',
-                'joinTable' => 'interests_users',
-            ]
-        );
+        $this->belongsToMany('Images', [
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'image_id',
+            'joinTable' => 'images_users',
+            'sort' => ['ImagesUsers.order' => 'ASC'],
+        ]);
+        $this->belongsToMany('Interests', [
+            'foreignKey' => 'user_id',
+            'targetForeignKey' => 'interest_id',
+            'joinTable' => 'interests_users',
+        ]);
     }
 
     /**
