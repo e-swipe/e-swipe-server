@@ -2,27 +2,27 @@
 
 namespace App\Model\Table;
 
-use App\Model\Entity\Gender;
+use App\Model\Entity\Chat;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Genders Model
+ * Chats Model
  *
- * @property \Cake\ORM\Association\HasMany $Users
- * @property \Cake\ORM\Association\HasMany $UsersGendersLookingFor
+ * @property \Cake\ORM\Association\HasMany $ChatsUsersMessages
+ * @property \Cake\ORM\Association\HasMany $Matches
  *
- * @method Gender get($primaryKey, $options = [])
- * @method Gender newEntity($data = null, array $options = [])
- * @method Gender[] newEntities(array $data, array $options = [])
- * @method Gender|bool save(EntityInterface $entity, $options = [])
- * @method Gender patchEntity(EntityInterface $entity, array $data, array $options = [])
- * @method Gender[] patchEntities($entities, array $data, array $options = [])
- * @method Gender findOrCreate($search, callable $callback = null, $options = [])
+ * @method Chat get($primaryKey, $options = [])
+ * @method Chat newEntity($data = null, array $options = [])
+ * @method Chat[] newEntities(array $data, array $options = [])
+ * @method Chat|bool save(EntityInterface $entity, $options = [])
+ * @method Chat patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Chat[] patchEntities($entities, array $data, array $options = [])
+ * @method Chat findOrCreate($search, callable $callback = null, $options = [])
  */
-class GendersTable extends Table
+class ChatsTable extends Table
 {
 
     /**
@@ -35,20 +35,20 @@ class GendersTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('genders');
-        $this->setDisplayField('name');
+        $this->setTable('chats');
+        $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
         $this->hasMany(
-            'Users',
+            'ChatsUsersMessages',
             [
-                'foreignKey' => 'gender_id',
+                'foreignKey' => 'chat_id',
             ]
         );
         $this->hasMany(
-            'UsersGendersLookingFor',
+            'Matches',
             [
-                'foreignKey' => 'gender_id',
+                'foreignKey' => 'chat_id',
             ]
         );
     }
@@ -66,11 +66,6 @@ class GendersTable extends Table
             ->allowEmpty('id', 'create')
             ->add('id', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
-        $validator
-            ->requirePresence('name', 'create')
-            ->notEmpty('name')
-            ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
-
         return $validator;
     }
 
@@ -84,7 +79,6 @@ class GendersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['id']));
-        $rules->add($rules->isUnique(['name']));
 
         return $rules;
     }

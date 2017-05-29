@@ -28,13 +28,16 @@ class ProfilController extends ApiV1Controller
     public function profil()
     {
         $this->loadModel('Users');
-        $user_id = $this->Auth->user('id');
+        $user_id = $this->Auth->user('user_id');
 
         // TODO : optimize
         // https://api.cakephp.org/3.4/class-Cake.ORM.Query.html#_contain
-        $user = $this->Users->get($user_id, [
-            'contain' => ['LookingFor', 'Genders', 'Images', 'Events' => ['Images']]
-        ]);
+        $user = $this->Users->get(
+            $user_id,
+            [
+                'contain' => ['LookingFor', 'Genders', 'Images', 'Events' => ['Images']],
+            ]
+        );
 
         $user->date_of_birth = $user->date_of_birth->format('m/d/Y');
         $userInfo = new UserInfo($user->toArray());
@@ -45,15 +48,18 @@ class ProfilController extends ApiV1Controller
     public function patch()
     {
         $this->loadModel('Users');
-        $user_id = $this->Auth->user('id');
+        $user_id = $this->Auth->user('user_id');
 
         $message = DataValidator::validateMePatch($this->request);
         if (!is_null($message)) {
             throw new UnprocessedEntityException($message);
         }
-        $userPatch = array_filter($this->request->getData(), function ($key) {
-            return $key != null;
-        });
+        $userPatch = array_filter(
+            $this->request->getData(),
+            function ($key) {
+                return $key != null;
+            }
+        );
 
         $user = $this->Users->get($user_id, ['contain' => ['LookingFor']]);
 
@@ -100,6 +106,7 @@ class ProfilController extends ApiV1Controller
         }
 
         $this->Users->save($user);
+
         return $this->response->withStatus(204);
 
     }

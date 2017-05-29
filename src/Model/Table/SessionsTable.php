@@ -39,10 +39,13 @@ class SessionsTable extends Table
         $this->setDisplayField('uuid');
         $this->setPrimaryKey('uuid');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Users',
+            [
+                'foreignKey' => 'user_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**
@@ -96,6 +99,7 @@ class SessionsTable extends Table
     protected function _initializeSchema(TableSchema $schema)
     {
         $schema->columnType('uuid', 'uuidtype');
+
         return $schema;
     }
 }

@@ -49,8 +49,9 @@ class UserInfo
         foreach ($pictures as $picture) {
             $this->pictures[] = new Image($picture);
         }
-        if (!empty($this->pictures))
+        if (!empty($this->pictures)) {
             $this->picture_url = $this->pictures[0]->url;
+        }
 
         $this->events = [];
         foreach ($user['events'] as $event) {

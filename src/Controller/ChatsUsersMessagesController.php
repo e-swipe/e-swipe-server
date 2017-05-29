@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Controller\AppController;
 use App\Model\Entity\ChatsUsersMessage;
 
 /**
@@ -23,7 +22,7 @@ class ChatsUsersMessagesController extends ApiV1Controller
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Chat', 'Users']
+            'contain' => ['Chats', 'Users'],
         ];
         $chatsUsersMessages = $this->paginate($this->ChatsUsersMessages);
 
@@ -40,9 +39,12 @@ class ChatsUsersMessagesController extends ApiV1Controller
      */
     public function view($id = null)
     {
-        $chatsUsersMessage = $this->ChatsUsersMessages->get($id, [
-            'contain' => ['Chat', 'Users']
-        ]);
+        $chatsUsersMessage = $this->ChatsUsersMessages->get(
+            $id,
+            [
+                'contain' => ['Chats', 'Users'],
+            ]
+        );
 
         $this->set('chatsUsersMessage', $chatsUsersMessage);
         $this->set('_serialize', ['chatsUsersMessage']);
@@ -65,7 +67,7 @@ class ChatsUsersMessagesController extends ApiV1Controller
             }
             $this->Flash->error(__('The chats users message could not be saved. Please, try again.'));
         }
-        $chat = $this->ChatsUsersMessages->Chat->find('list', ['limit' => 200]);
+        $chat = $this->ChatsUsersMessages->Chats->find('list', ['limit' => 200]);
         $users = $this->ChatsUsersMessages->Users->find('list', ['limit' => 200]);
         $this->set(compact('chatsUsersMessage', 'chat', 'users'));
         $this->set('_serialize', ['chatsUsersMessage']);
@@ -80,9 +82,12 @@ class ChatsUsersMessagesController extends ApiV1Controller
      */
     public function edit($id = null)
     {
-        $chatsUsersMessage = $this->ChatsUsersMessages->get($id, [
-            'contain' => []
-        ]);
+        $chatsUsersMessage = $this->ChatsUsersMessages->get(
+            $id,
+            [
+                'contain' => [],
+            ]
+        );
         if ($this->request->is(['patch', 'post', 'put'])) {
             $chatsUsersMessage = $this->ChatsUsersMessages->patchEntity($chatsUsersMessage, $this->request->getData());
             if ($this->ChatsUsersMessages->save($chatsUsersMessage)) {
@@ -92,7 +97,7 @@ class ChatsUsersMessagesController extends ApiV1Controller
             }
             $this->Flash->error(__('The chats users message could not be saved. Please, try again.'));
         }
-        $chat = $this->ChatsUsersMessages->Chat->find('list', ['limit' => 200]);
+        $chat = $this->ChatsUsersMessages->Chats->find('list', ['limit' => 200]);
         $users = $this->ChatsUsersMessages->Users->find('list', ['limit' => 200]);
         $this->set(compact('chatsUsersMessage', 'chat', 'users'));
         $this->set('_serialize', ['chatsUsersMessage']);

@@ -5,15 +5,15 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Gender Entity
+ * Accept Entity
  *
- * @property int $id
- * @property string $name
+ * @property int $accepter_id
+ * @property int $accepted_id
  *
- * @property User[] $users
- * @property UsersGendersLookingFor[] $users_genders_looking_for
+ * @property \App\Model\Entity\User $accepter
+ * @property \App\Model\Entity\User $accepted
  */
-class Gender extends Entity
+class Accept extends Entity
 {
 
     /**
@@ -27,6 +27,7 @@ class Gender extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'id' => false,
+        'accepter_id' => false,
+        'accepted_id' => false,
     ];
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -27,6 +28,6 @@ class UsersGendersLookingFor extends Entity
     protected $_accessible = [
         '*' => true,
         'user_id' => false,
-        'gender_id' => false
+        'gender_id' => false,
     ];
 }

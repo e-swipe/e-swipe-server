@@ -5,15 +5,14 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Gender Entity
+ * Chat Entity
  *
  * @property int $id
- * @property string $name
  *
- * @property User[] $users
- * @property UsersGendersLookingFor[] $users_genders_looking_for
+ * @property \App\Model\Entity\ChatsUsersMessage[] $chats_users_messages
+ * @property \App\Model\Entity\Match[] $matches
  */
-class Gender extends Entity
+class Chat extends Entity
 {
 
     /**

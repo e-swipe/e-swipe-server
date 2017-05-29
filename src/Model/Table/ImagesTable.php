@@ -40,16 +40,22 @@ class ImagesTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsToMany('Events', [
-            'foreignKey' => 'image_id',
-            'targetForeignKey' => 'event_id',
-            'joinTable' => 'events_images'
-        ]);
-        $this->belongsToMany('Users', [
-            'foreignKey' => 'image_id',
-            'targetForeignKey' => 'user_id',
-            'joinTable' => 'images_users'
-        ]);
+        $this->belongsToMany(
+            'Events',
+            [
+                'foreignKey' => 'image_id',
+                'targetForeignKey' => 'event_id',
+                'joinTable' => 'events_images',
+            ]
+        );
+        $this->belongsToMany(
+            'Users',
+            [
+                'foreignKey' => 'image_id',
+                'targetForeignKey' => 'user_id',
+                'joinTable' => 'images_users',
+            ]
+        );
     }
 
     /**
@@ -114,6 +120,7 @@ class ImagesTable extends Table
     protected function _initializeSchema(TableSchema $schema)
     {
         $schema->columnType('uuid', 'uuidtype');
+
         return $schema;
     }
 }

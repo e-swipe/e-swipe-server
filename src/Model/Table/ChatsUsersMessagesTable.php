@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Model\Table;
 
 use App\Model\Entity\ChatsUsersMessage;
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -39,14 +39,20 @@ class ChatsUsersMessagesTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey(['id', 'chat_id', 'user_id']);
 
-        $this->belongsTo('Chat', [
-            'foreignKey' => 'chat_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Chats',
+            [
+                'foreignKey' => 'chat_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'Users',
+            [
+                'foreignKey' => 'user_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**
@@ -84,7 +90,7 @@ class ChatsUsersMessagesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['id']));
-        $rules->add($rules->existsIn(['chat_id'], 'Chat'));
+        $rules->add($rules->existsIn(['chat_id'], 'Chats'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;

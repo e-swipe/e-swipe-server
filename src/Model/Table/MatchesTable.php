@@ -1,25 +1,26 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use App\Model\Entity\Match;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 
 /**
  * Matches Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Chat
+ * @property \Cake\ORM\Association\BelongsTo $MatchedUsers
+ * @property \Cake\ORM\Association\BelongsTo $Chats
  *
- * @method \App\Model\Entity\Match get($primaryKey, $options = [])
- * @method \App\Model\Entity\Match newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Match[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Match|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Match patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Match[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Match findOrCreate($search, callable $callback = null, $options = [])
+ * @method Match get($primaryKey, $options = [])
+ * @method Match newEntity($data = null, array $options = [])
+ * @method Match[] newEntities(array $data, array $options = [])
+ * @method Match|bool save(EntityInterface $entity, $options = [])
+ * @method Match patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Match[] patchEntities($entities, array $data, array $options = [])
+ * @method Match findOrCreate($search, callable $callback = null, $options = [])
  */
 class MatchesTable extends Table
 {
@@ -38,18 +39,29 @@ class MatchesTable extends Table
         $this->setDisplayField('matcher_id');
         $this->setPrimaryKey(['matcher_id', 'matched_id']);
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'matcher_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Users', [
-            'foreignKey' => 'matched_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Chat', [
-            'foreignKey' => 'chat_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Users',
+            [
+                'className' => 'Users',
+                'foreignKey' => 'matcher_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'MatchedUsers',
+            [
+                'className' => 'Users',
+                'foreignKey' => 'matched_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'Chats',
+            [
+                'foreignKey' => 'chat_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**
@@ -63,7 +75,7 @@ class MatchesTable extends Table
     {
         $rules->add($rules->existsIn(['matcher_id'], 'Users'));
         $rules->add($rules->existsIn(['matched_id'], 'Users'));
-        $rules->add($rules->existsIn(['chat_id'], 'Chat'));
+        $rules->add($rules->existsIn(['chat_id'], 'Chats'));
 
         return $rules;
     }

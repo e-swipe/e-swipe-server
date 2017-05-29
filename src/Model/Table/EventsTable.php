@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Model\Table;
 
 use App\Model\Entity\Event;
 use Cake\Datasource\EntityInterface;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -41,22 +41,34 @@ class EventsTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('EventsUsersAccept', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->hasMany('EventsUsersDeny', [
-            'foreignKey' => 'event_id'
-        ]);
-        $this->belongsToMany('Images', [
-            'foreignKey' => 'event_id',
-            'targetForeignKey' => 'image_id',
-            'joinTable' => 'events_images'
-        ]);
-        $this->belongsToMany('Interests', [
-            'foreignKey' => 'event_id',
-            'targetForeignKey' => 'interest_id',
-            'joinTable' => 'events_interests'
-        ]);
+        $this->hasMany(
+            'EventsUsersAccept',
+            [
+                'foreignKey' => 'event_id',
+            ]
+        );
+        $this->hasMany(
+            'EventsUsersDeny',
+            [
+                'foreignKey' => 'event_id',
+            ]
+        );
+        $this->belongsToMany(
+            'Images',
+            [
+                'foreignKey' => 'event_id',
+                'targetForeignKey' => 'image_id',
+                'joinTable' => 'events_images',
+            ]
+        );
+        $this->belongsToMany(
+            'Interests',
+            [
+                'foreignKey' => 'event_id',
+                'targetForeignKey' => 'interest_id',
+                'joinTable' => 'events_interests',
+            ]
+        );
     }
 
     /**

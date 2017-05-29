@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -31,6 +32,6 @@ class ChatsUsersMessage extends Entity
         '*' => true,
         'id' => false,
         'chat_id' => false,
-        'user_id' => false
+        'user_id' => false,
     ];
 }

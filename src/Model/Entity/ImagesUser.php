@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -28,6 +29,6 @@ class ImagesUser extends Entity
     protected $_accessible = [
         '*' => true,
         'user_id' => false,
-        'image_id' => false
+        'image_id' => false,
     ];
 }

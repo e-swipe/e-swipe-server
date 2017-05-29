@@ -37,15 +37,22 @@ class LoginController extends AppController
         $password = $this->request->getQuery('password');
         $instanceId = $this->request->getQuery('instance_id');
 
-        if (!Validation::email($email) || !is_string($password) || strlen($password) > 250 || !is_string($instanceId) || strlen($instanceId) > 250) {
+        if (!Validation::email($email) || !is_string($password) || strlen($password) > 250 || !is_string(
+                $instanceId
+            ) || strlen($instanceId) > 250
+        ) {
 
             $message = null;
             if (!Validation::email($email)) {
                 $message = 'not an "email"';
-            } else if (!is_string($password) || strlen($password) > 250) {
-                $message = 'unauthorized "password" type';
-            } else if (!is_string($instanceId) || strlen($instanceId) > 250) {
-                $message = 'unauthorized "instance_id" type';
+            } else {
+                if (!is_string($password) || strlen($password) > 250) {
+                    $message = 'unauthorized "password" type';
+                } else {
+                    if (!is_string($instanceId) || strlen($instanceId) > 250) {
+                        $message = 'unauthorized "instance_id" type';
+                    }
+                }
             }
 
             throw new UnprocessedEntityException($message);
@@ -77,7 +84,8 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
-        Log::info('[LOGIN][default][201][' . $user->id . ']' . $session->uuid . ' : ' . $user->id);
+        Log::info('[LOGIN][default][201]['.$user->id.']'.$session->uuid.' : '.$user->id);
+
         return JsonBodyResponse::okResponse($this->response, $token);
     }
 
@@ -93,15 +101,17 @@ class LoginController extends AppController
         $facebookAuth = $this->request->getQuery('facebook_auth');
         $instanceId = $this->request->getQuery('instance_id');
         $userData = $this->request->getData();
-        $accessToken = Configure::read('facebook.id') . "|" . Configure::read('facebook.key');
+        $accessToken = Configure::read('facebook.id')."|".Configure::read('facebook.key');
 
         $message = DataValidator::validateLoginFacebook($this->request);
         if (!is_null($message)) {
             throw new UnprocessedEntityException($message);
         }
 
-        $answer = (new Client())->get('https://graph.facebook.com/debug_token',
-            ['input_token' => $facebookAuth, 'access_token' => $accessToken]);
+        $answer = (new Client())->get(
+            'https://graph.facebook.com/debug_token',
+            ['input_token' => $facebookAuth, 'access_token' => $accessToken]
+        );
 
         $facebookData = $answer->json;
         if (array_key_exists('error', $facebookData)) {
@@ -133,7 +143,8 @@ class LoginController extends AppController
 
             $token = new Token($session->uuid);
 
-            Log::info('[LOGIN][facebook][200][' . $user->id . ']' . $session->uuid . ":" . $user->facebook_id);
+            Log::info('[LOGIN][facebook][200]['.$user->id.']'.$session->uuid.":".$user->facebook_id);
+
             return JsonBodyResponse::okResponse($this->response, $token);
         }
 
@@ -165,7 +176,8 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
-        Log::info('[LOGIN][facebook][201][' . $user->id . ']' . $session->uuid . ' : ' . $user->facebook_id);
+        Log::info('[LOGIN][facebook][201]['.$user->id.']'.$session->uuid.' : '.$user->facebook_id);
+
         return JsonBodyResponse::createdResponse($this->response, $token);
 
 

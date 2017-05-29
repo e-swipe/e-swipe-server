@@ -51,11 +51,11 @@ CREATE TABLE IF NOT EXISTS `users` (
 );
 
 -- -----------------------------------------------------
--- Table `chat`
+-- Table `chats`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `chat`;
+DROP TABLE IF EXISTS chats;
 
-CREATE TABLE IF NOT EXISTS `chat` (
+CREATE TABLE IF NOT EXISTS chats (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC)
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `matches` (
     REFERENCES `users` (`id`)
         ON DELETE CASCADE,
     FOREIGN KEY (`chat_id`)
-    REFERENCES `chat` (`id`)
+    REFERENCES chats (`id`)
 )
     COMMENT = 'need to be duplicated for each match :)';
 
@@ -290,7 +290,7 @@ CREATE TABLE IF NOT EXISTS `chats_users_messages` (
     UNIQUE INDEX `id_UNIQUE` (`id` ASC),
     INDEX `date_sort` (`chat_id` ASC, `created_at` DESC),
     FOREIGN KEY (`chat_id`)
-    REFERENCES `chat` (`id`)
+    REFERENCES chats (`id`)
         ON DELETE CASCADE,
     FOREIGN KEY (`user_id`)
     REFERENCES `users` (`id`)

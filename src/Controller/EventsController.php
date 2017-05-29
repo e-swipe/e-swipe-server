@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Controller;
 
-use App\Controller\AppController;
 use App\Model\Entity\Event;
 
 /**
@@ -36,9 +36,12 @@ class EventsController extends ApiV1Controller
      */
     public function view($id = null)
     {
-        $event = $this->Events->get($id, [
-            'contain' => ['Images', 'Interests', 'EventsUsersAccept', 'EventsUsersDeny']
-        ]);
+        $event = $this->Events->get(
+            $id,
+            [
+                'contain' => ['Images', 'Interests', 'EventsUsersAccept', 'EventsUsersDeny'],
+            ]
+        );
 
         $this->set('event', $event);
         $this->set('_serialize', ['event']);
@@ -76,9 +79,12 @@ class EventsController extends ApiV1Controller
      */
     public function edit($id = null)
     {
-        $event = $this->Events->get($id, [
-            'contain' => ['Images', 'Interests']
-        ]);
+        $event = $this->Events->get(
+            $id,
+            [
+                'contain' => ['Images', 'Interests'],
+            ]
+        );
         if ($this->request->is(['patch', 'post', 'put'])) {
             $event = $this->Events->patchEntity($event, $this->request->getData());
             if ($this->Events->save($event)) {

@@ -24,6 +24,7 @@ class DataValidator
             ->maxLength('instance_id', 250);;
 
         $check = array_merge($request->getQueryParams(), $request->getData());
+
         return self::toStringValidationErrors($validator, $check);
     }
 
@@ -54,7 +55,8 @@ class DataValidator
         if (!empty($errors)) {
             list($key, $value) = each($errors);
             $combine = Hash::extract($value, '{s}');
-            return $key . ': ' . $combine[0];
+
+            return $key.': '.$combine[0];
         }
 
         return null;
@@ -78,14 +80,25 @@ class DataValidator
         $validator->allowEmpty('description')->maxLength('description', 500);
         $validator->allowEmpty('looking_for')->isArray('looking_for');
         $validator->allowEmpty('looking_for_age_min')
-            ->range('looking_for_age_min', [18, 100], null, function ($context) {
-                return $context['data']['looking_for_age_min'] != 0;
-            });
+            ->range(
+                'looking_for_age_min',
+                [18, 100],
+                null,
+                function ($context) {
+                    return $context['data']['looking_for_age_min'] != 0;
+                }
+            );
         $validator->allowEmpty('looking_for_age_max')
-            ->range('looking_for_age_max', [18, 100], null, function ($context) {
-                return $context['data']['looking_for_age_max'] != 0;
-            });
+            ->range(
+                'looking_for_age_max',
+                [18, 100],
+                null,
+                function ($context) {
+                    return $context['data']['looking_for_age_max'] != 0;
+                }
+            );
         $validator->allowEmpty('is_visible')->boolean('is_visible');
+
         return $validator;
     }
 
@@ -95,6 +108,7 @@ class DataValidator
         $validator->requirePresence('latitude')->latitude('latitude');
         $validator->requirePresence('longitude')->longitude('longitude');
         $validator->allowEmpty('radius')->integer('radius')->range('radius', [10, 200]);
+
         return self::toStringValidationErrors($validator, $request->getQueryParams());
     }
 

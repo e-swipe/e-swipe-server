@@ -12,6 +12,7 @@
  * @since     3.0.0
  * @license   http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Console;
 
 use Cake\Utility\Security;
@@ -79,8 +80,8 @@ class Installer
      */
     public static function createAppConfig($dir, $io)
     {
-        $appConfig = $dir . '/config/app.php';
-        $defaultConfig = $dir . '/config/app.default.php';
+        $appConfig = $dir.'/config/app.php';
+        $defaultConfig = $dir.'/config/app.default.php';
         if (!file_exists($appConfig)) {
             copy($defaultConfig, $appConfig);
             $io->write('Created `config/app.php` file');
@@ -104,14 +105,14 @@ class Installer
             'tmp/cache/persistent',
             'tmp/cache/views',
             'tmp/sessions',
-            'tmp/tests'
+            'tmp/tests',
         ];
 
         foreach ($paths as $path) {
-            $path = $dir . '/' . $path;
+            $path = $dir.'/'.$path;
             if (!file_exists($path)) {
                 mkdir($path);
-                $io->write('Created `' . $path . '` directory');
+                $io->write('Created `'.$path.'` directory');
             }
         }
     }
@@ -137,16 +138,16 @@ class Installer
 
             $res = chmod($path, $currentPerms | $perms);
             if ($res) {
-                $io->write('Permissions set on ' . $path);
+                $io->write('Permissions set on '.$path);
             } else {
-                $io->write('Failed to set permissions on ' . $path);
+                $io->write('Failed to set permissions on '.$path);
             }
         };
 
         $walker = function ($dir, $perms, $io) use (&$walker, $changePerms) {
             $files = array_diff(scandir($dir), ['.', '..']);
             foreach ($files as $file) {
-                $path = $dir . '/' . $file;
+                $path = $dir.'/'.$file;
 
                 if (!is_dir($path)) {
                     continue;
@@ -158,9 +159,9 @@ class Installer
         };
 
         $worldWritable = bindec('0000000111');
-        $walker($dir . '/tmp', $worldWritable, $io);
-        $changePerms($dir . '/tmp', $worldWritable, $io);
-        $changePerms($dir . '/logs', $worldWritable, $io);
+        $walker($dir.'/tmp', $worldWritable, $io);
+        $changePerms($dir.'/tmp', $worldWritable, $io);
+        $changePerms($dir.'/logs', $worldWritable, $io);
     }
 
     /**
@@ -172,7 +173,7 @@ class Installer
      */
     public static function setSecuritySalt($dir, $io)
     {
-        $config = $dir . '/config/app.php';
+        $config = $dir.'/config/app.php';
         $content = file_get_contents($config);
 
         $newKey = hash('sha256', Security::randomBytes(64));

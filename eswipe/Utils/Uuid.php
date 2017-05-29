@@ -15,6 +15,7 @@ class Uuid
     public static function toByte($uuid)
     {
         $uuid = Text::slug($uuid);
+
         return pack("h*", str_replace('-', '', $uuid));
 
     }
@@ -22,7 +23,12 @@ class Uuid
     public static function toString($byteUuid)
     {
         $uuid = unpack('h*', $byteUuid);
-        return preg_replace("/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/", "$1-$2-$3-$4-$5", $uuid)[1];
+
+        return preg_replace(
+            "/([0-9a-f]{8})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{4})([0-9a-f]{12})/",
+            "$1-$2-$3-$4-$5",
+            $uuid
+        )[1];
     }
 
     public static function isValid($uuid)

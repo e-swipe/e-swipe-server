@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -26,6 +27,6 @@ class Decline extends Entity
     protected $_accessible = [
         '*' => true,
         'decliner_id' => false,
-        'declined_id' => false
+        'declined_id' => false,
     ];
 }

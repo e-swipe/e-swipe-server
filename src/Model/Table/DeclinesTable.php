@@ -1,16 +1,15 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 
 /**
  * Declines Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Users
+ * @property \Cake\ORM\Association\BelongsTo $DeclinedUsers
  *
  * @method \App\Model\Entity\Decline get($primaryKey, $options = [])
  * @method \App\Model\Entity\Decline newEntity($data = null, array $options = [])
@@ -37,14 +36,22 @@ class DeclinesTable extends Table
         $this->setDisplayField('decliner_id');
         $this->setPrimaryKey(['decliner_id', 'declined_id']);
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'decliner_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Users', [
-            'foreignKey' => 'declined_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Users',
+            [
+                'foreignKey' => 'decliner_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'DeclinedUsers',
+            [
+                'className' => 'Users',
+                'targetTable' => 'users',
+                'foreignKey' => 'declined_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**

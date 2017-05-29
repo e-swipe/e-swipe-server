@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
@@ -28,6 +29,6 @@ class Match extends Entity
     protected $_accessible = [
         '*' => true,
         'matcher_id' => false,
-        'matched_id' => false
+        'matched_id' => false,
     ];
 }

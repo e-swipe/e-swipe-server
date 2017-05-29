@@ -1,10 +1,9 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 
 /**
  * UsersGendersLookingFor Model
@@ -37,14 +36,20 @@ class UsersGendersLookingForTable extends Table
         $this->setDisplayField('user_id');
         $this->setPrimaryKey(['user_id', 'gender_id']);
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Genders', [
-            'foreignKey' => 'gender_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Users',
+            [
+                'foreignKey' => 'user_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'Genders',
+            [
+                'foreignKey' => 'gender_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**

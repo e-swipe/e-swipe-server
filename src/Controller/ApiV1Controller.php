@@ -16,8 +16,13 @@ class ApiV1Controller extends AppController
     {
         parent::initialize();
 
-        $this->loadComponent('Auth', ['authenticate' => ['Api',],
-            'unauthorizedRedirect' => false]);
+        $this->loadComponent(
+            'Auth',
+            [
+                'authenticate' => ['Api',],
+                'unauthorizedRedirect' => false,
+            ]
+        );
     }
 
     public function beforeFilter(Event $event)

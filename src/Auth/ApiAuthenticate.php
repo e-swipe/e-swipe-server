@@ -26,12 +26,12 @@ class ApiAuthenticate extends BaseAuthenticate
      */
     protected $_defaultConfig = [
         'fields' => [
-            'token' => 'uuid'
+            'token' => 'uuid',
         ],
         'sessionModel' => 'Sessions',
-        'contain' => 'Users',
+        //'contain' => 'Users',
         'fk_alias' => 'user',
-        'finder' => 'all'
+        'finder' => 'all',
     ];
 
     /**
@@ -87,7 +87,7 @@ class ApiAuthenticate extends BaseAuthenticate
             return false;
         }
 
-        return $result->user->toArray();
+        return $result->toArray();
     }
 
     /**
@@ -102,7 +102,7 @@ class ApiAuthenticate extends BaseAuthenticate
         $table = TableRegistry::get($config['sessionModel']);
 
         $options = [
-            'conditions' => [$table->aliasField($config['fields']['token']) => $token]
+            'conditions' => [$table->aliasField($config['fields']['token']) => $token],
         ];
 
         if (!empty($config['contain'])) {

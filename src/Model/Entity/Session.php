@@ -3,7 +3,6 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-use Eswipe\Utils\Uuid;
 
 /**
  * Session Entity
@@ -28,6 +27,6 @@ class Session extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'uuid' => false
+        'uuid' => false,
     ];
 }

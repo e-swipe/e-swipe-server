@@ -1,24 +1,25 @@
 <?php
+
 namespace App\Model\Table;
 
-use Cake\ORM\Query;
+use App\Model\Entity\Accept;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\Validation\Validator;
 
 /**
  * Accepts Model
  *
  * @property \Cake\ORM\Association\BelongsTo $Users
- * @property \Cake\ORM\Association\BelongsTo $Users
+ * @property \Cake\ORM\Association\BelongsTo $AcceptedUsers
  *
- * @method \App\Model\Entity\Accept get($primaryKey, $options = [])
- * @method \App\Model\Entity\Accept newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Accept[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Accept|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Accept patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Accept[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Accept findOrCreate($search, callable $callback = null, $options = [])
+ * @method Accept get($primaryKey, $options = [])
+ * @method Accept newEntity($data = null, array $options = [])
+ * @method Accept[] newEntities(array $data, array $options = [])
+ * @method Accept|bool save(EntityInterface $entity, $options = [])
+ * @method Accept patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method Accept[] patchEntities($entities, array $data, array $options = [])
+ * @method Accept findOrCreate($search, callable $callback = null, $options = [])
  */
 class AcceptsTable extends Table
 {
@@ -37,14 +38,22 @@ class AcceptsTable extends Table
         $this->setDisplayField('accepter_id');
         $this->setPrimaryKey(['accepter_id', 'accepted_id']);
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'accepter_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Users', [
-            'foreignKey' => 'accepted_id',
-            'joinType' => 'INNER'
-        ]);
+        $this->belongsTo(
+            'Users',
+            [
+                'foreignKey' => 'accepter_id',
+                'joinType' => 'INNER',
+            ]
+        );
+        $this->belongsTo(
+            'AcceptedUsers',
+            [
+                'className' => 'Users',
+                'targetTable' => 'users',
+                'foreignKey' => 'accepted_id',
+                'joinType' => 'INNER',
+            ]
+        );
     }
 
     /**
@@ -56,8 +65,8 @@ class AcceptsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['accepter_id'], 'Users'));
-        $rules->add($rules->existsIn(['accepted_id'], 'Users'));
+        $rules->add($rules->existsIn('accepter_id', 'Users'));
+        $rules->add($rules->existsIn('accepted_id', 'Users'));
 
         return $rules;
     }

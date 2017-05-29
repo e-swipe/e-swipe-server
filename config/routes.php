@@ -85,13 +85,13 @@ Router::scope('/v1', function (RouteBuilder $routes) {
     $routes->connect('/users', ['controller' => 'Users', 'action' => 'add', /*'_method' => 'POST'*/]);
     $routes->connect('/users/:uuid',
         ['controller' => 'Users', 'action' => 'get', '_method' => 'GET'],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/users/:uuid/accept',
         ['controller' => 'Users', 'action' => 'accept', /*'_method' => 'POST'*/],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/users/:uuid/decline',
         ['controller' => 'Users', 'action' => 'decline', /*'_method' => 'POST'*/],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
 
 
     $routes->connect('/me', ['controller' => 'Profil', 'action' => 'profil', '_method' => 'GET']);
@@ -101,7 +101,7 @@ Router::scope('/v1', function (RouteBuilder $routes) {
     $routes->connect('/me/photos', ['controller' => 'Profil', 'action' => 'addPhoto', /*'_method' => 'POST'*/]);
     $routes->connect('/me/photos/:uuid',
         ['controller' => 'Profil', 'action' => 'deletePhoto', '_method' => 'DELETE'],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/me/photos',
         ['controller' => 'Profil', 'action' => 'updatePhotosOrder', '_method' => 'PUT']);
 
@@ -110,21 +110,21 @@ Router::scope('/v1', function (RouteBuilder $routes) {
 
     $routes->connect('/chats/:uuid',
         ['controller' => 'Chats', 'action' => 'get', '_method' => 'GET'],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/chats/:uuid',
         ['controller' => 'Chats', 'action' => 'addMessage', /*'_method' => 'POST'*/],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
 
 
     $routes->connect('/events', ['controller' => 'Events', 'action' => 'index', '_method' => 'GET']);
     $routes->connect('/events/:uuid', ['controller' => 'Events', 'action' => 'get', '_method' => 'GET'],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/events/:uuid/participate',
         ['controller' => 'Events', 'action' => 'participate', /*'_method' => 'POST'*/],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
     $routes->connect('/events/:uuid/decline',
         ['controller' => 'Events', 'action' => 'decline', /*'_method' => 'POST'*/],
-        ['uuid' => '[0-9a-zA-Z]+']);
+        ['uuid' => '[0-9a-zA-Z]+', 'pass' => ['uuid']]);
 });
 
 
