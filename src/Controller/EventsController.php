@@ -54,7 +54,7 @@ class EventsController extends ApiV1Controller
             $eventCard[] = new EventCard($event);
         }
 
-        Log::info('[EVENTS: index: 201: '.$this->Auth->user('user_id').'] rad='.$radius.', limit='.$limit.', offset='.$offset.', found='
+        Log::info('[EVENTS: index: 200: '.$this->Auth->user('user_id').'] rad='.$radius.', limit='.$limit.', offset='.$offset.', found='
             .sizeof
             ($eventCard));
 
