@@ -57,6 +57,8 @@ class DataValidator
             list($key, $value) = each($errors);
             $combine = Hash::extract($value, '{s}');
 
+            var_dump($errors);
+
             return $key.': '.$combine[0];
         }
 
@@ -151,6 +153,26 @@ class DataValidator
         $validator->requirePresence('date')->dateTime('date', ['ymd'], null, function ($context) {
             return $context['data']['date'] != 0;
         });
+
+        return $validator;
+    }
+
+    public static function validateEvents(ServerRequest $response)
+    {
+        return self::toStringValidationErrors(self::eventValidator(), $response->getQueryParams());
+    }
+
+    /**
+     * @return Validator
+     */
+    public static function eventValidator()
+    {
+        $validator = new Validator();
+        $validator->requirePresence('latitude')->latitude('latitude');
+        $validator->requirePresence('longitude')->longitude('longitude');
+        $validator->allowEmpty('radius')->integer('radius')->range('radius', [10, 200]);
+        $validator->allowEmpty('offset')->integer('offset')->greaterThanOrEqual('offset', 0);
+        $validator->allowEmpty('limit')->integer('limit')->range('limit', [10, 200]);
 
         return $validator;
     }

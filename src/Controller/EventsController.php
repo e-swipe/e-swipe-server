@@ -7,10 +7,14 @@ use App\Model\Entity\Event;
 use App\Model\Table\EventsUsersAcceptTable;
 use App\Model\Table\EventsUsersDenyTable;
 use App\Network\Exception\UnprocessedEntityException;
+use App\Validator\DataValidator;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\TableRegistry;
+use Eswipe\Model\EventCard;
+use Eswipe\Utils\Coordinates;
 
 /**
  * Events Controller
@@ -23,6 +27,35 @@ use Cake\ORM\TableRegistry;
  */
 class EventsController extends ApiV1Controller
 {
+
+    public function index()
+    {
+        $message = DataValidator::validateEvents($this->request);
+        if (!is_null($message)) {
+            throw new UnprocessedEntityException($message);
+        }
+
+        $latitude = $this->request->getQuery('latitude');
+        $longitude = $this->request->getQuery('longitude');
+        $radius = $this->request->getQuery('radius', 50);
+        $offset = $this->request->getQuery('offset', 0);
+        $limit = $this->request->getQuery('limit', 10);
+
+        $bounding = Coordinates::getBoundingBox($latitude, $longitude, $radius);
+
+        $query = new QueryExpression();
+        $query->between('Events.latitude', $bounding->minLat, $bounding->maxLat)
+            ->between('Events.longitude', $bounding->minLong, $bounding->maxLong);
+
+        $events = $this->Events->find('all', ['Images'])->where($query)->limit($limit)->offset($offset);
+
+        $eventCard = [];
+        foreach ($events as $event) {
+            $eventCard[] = new EventCard($event);
+        }
+
+        return JsonBodyResponse::okResponse($this->response, $eventCard);
+    }
 
     public function get($uuid)
     {
