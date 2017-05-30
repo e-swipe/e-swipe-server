@@ -178,7 +178,7 @@ class ProfilController extends ApiV1Controller
 
         $offset = $this->request->getQuery('offset', 0);
         $limit = $this->request->getQuery('limit', 10);
-u
+
 
         $chats = $chatsTable->find()
             ->contain('ChatsUsersMessages')
