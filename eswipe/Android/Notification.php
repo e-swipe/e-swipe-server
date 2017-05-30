@@ -8,6 +8,10 @@ class Notification
     public $title;
     public $body;
     public $click_action;
+    public $color;
+    public $sound;
+    public $tag;
+    public $icon;
 
     /**
      * Notification constructor.
@@ -20,6 +24,10 @@ class Notification
         $this->title = $title;
         $this->body = $body;
         $this->click_action = $click_action;
+        $this->tag = $title;
+        $this->color = "#FF0000";
+        $this->sound = "default";
+        $this->icon = "ic_launcher";
     }
 
 }

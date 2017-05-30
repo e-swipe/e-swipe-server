@@ -195,7 +195,11 @@ class UsersController extends ApiV1Controller
         $query = new QueryExpression();
         $query->between('Users.latitude', $bounding->minLat, $bounding->maxLat)
             ->between('Users.longitude', $bounding->minLong, $bounding->maxLong)
-            ->notEq('Users.id', $user->id);
+            ->notEq('Users.id', $user->id)
+            ->between('Users.date_of_birth',
+                Date::now()->subYears($user->max_age),
+                Date::now()->subYears($user->min_age))
+            ->eq('Users.is_visible', true);
 
         if ($usersLookingFor) {
             $query->in('Users.gender_id', $usersLookingFor);
