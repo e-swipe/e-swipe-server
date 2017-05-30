@@ -60,7 +60,7 @@ class ChatsController extends ApiV1Controller
 
         $jsonChat = new Chat($chat);
 
-        Log::Debug('[CHAT][get]['.$uuid.'] limit='.$limit.' | offset='.$offset.' | since='.$since);
+        Log::Debug('[CHATS: get: 200: '.$userId.'] '.$uuid.'=> limit='.$limit.' | offset='.$offset.' | since='.$since);
 
         return JsonBodyResponse::okResponse($this->response, $jsonChat);
     }
@@ -97,7 +97,7 @@ class ChatsController extends ApiV1Controller
          * Push Notification :)
          */
         $usersTable = TableRegistry::get('Users');
-        $user = $usersTable->get($userId, ['fields' => ['firstname']]);
+        $user = $usersTable->get($userId, ['fields' => ['id', 'firstname']]);
 
         $reciever = $usersTable->find('all', ['fields' => ['id', 'instance_id']])->matching('Matched',
             function ($q) use ($userId, $uuid) {

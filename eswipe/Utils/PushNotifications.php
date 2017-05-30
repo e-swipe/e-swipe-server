@@ -30,7 +30,7 @@ class PushNotifications
         $notification = new Notification($sender->firstname, $message->content, "com.e_swipe.e_swipe_CHAT_ACTIVITY");
         $messageData = new MessageData($chatId);
         $response = self::push($notification, $messageData, $reciever->instance_id);
-        Log::debug('[PUSH][message]['.$response->getStatusCode().'] sender='.$sender->firstname.', reciever='.$reciever->id.' ('.$reciever->instance_id.')');
+        Log::debug('[PUSH: message: '.$response->getStatusCode().': '.$sender->id.'] sender='.$sender->firstname.', reciever='.$reciever->id.' ('.$reciever->instance_id.')');
 
         return $response;
 
@@ -70,7 +70,7 @@ class PushNotifications
         $messageData = new MessageData($chatId);
         $response = self::push($notification, $messageData, $matchee->instance_id);
 
-        Log::debug('[PUSH][message]['.$response->getStatusCode().'] sender='.$matcher->firstname.', reciever='.$matchee->id.' ('.$matchee->instance_id.')');
+        Log::debug('[PUSH: message: '.$response->getStatusCode().': '.$matcher->id.'] sender='.$matcher->firstname.', reciever='.$matchee->id.' ('.$matchee->instance_id.')');
 
         return $response;
 

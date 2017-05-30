@@ -54,7 +54,9 @@ class EventsController extends ApiV1Controller
             $eventCard[] = new EventCard($event);
         }
 
-        Log::info('[EVENTS][index] rad='.$radius.', limit='.$limit.', offset='.$offset.', found='.sizeof($eventCard));
+        Log::info('[EVENTS: index: 201: '.$this->Auth->user('user_id').'] rad='.$radius.', limit='.$limit.', offset='.$offset.', found='
+            .sizeof
+            ($eventCard));
 
         return JsonBodyResponse::okResponse($this->response, $eventCard);
     }
@@ -105,7 +107,7 @@ class EventsController extends ApiV1Controller
         $acceptEvent->event_id = $event->id;
         $eventsUsersAcceptTable->save($acceptEvent);
 
-        Log::info('[EVENTS][accept] '.$userId.'-->'.$event->id);
+        Log::info('[EVENTS: accept: 204: '.$userId.'] '.$event->id);
 
         return $this->response->withStatus(204);
         // TODO : push notificaitons
@@ -137,7 +139,7 @@ class EventsController extends ApiV1Controller
         $acceptEvent->user_id = $userId;
         $acceptEvent->event_id = $event->id;
         $eventsUsersDenyTable->save($acceptEvent);
-        Log::info('[EVENTS][decline] '.$userId.'-->'.$event->id);
+        Log::info('[EVENTS: decline: 204: '.$userId.']'.$event->id);
 
         return $this->response->withStatus(204);
     }

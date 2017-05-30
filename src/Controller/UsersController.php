@@ -61,7 +61,7 @@ class UsersController extends ApiV1Controller
 
         $this->Auth->logout();
 
-        Log::info('[USER][logout][204]['.$userId.']'.$session->uuid);
+        Log::info('[USERS: logout: 204: '.$userId.']'.$session->uuid);
 
         return $this->response->withStatus(204);
     }
@@ -147,7 +147,7 @@ class UsersController extends ApiV1Controller
         $token = new Token();
         $token->auth = $session->uuid;
 
-        Log::info('[LOGIN][create][201]['.$user->id.']: '.$session->uuid);
+        Log::info('[LOGIN: create: 201: '.$user->id.']: '.$session->uuid);
 
         return JsonBodyResponse::createdResponse($this->response, $token);
     }
@@ -232,7 +232,7 @@ class UsersController extends ApiV1Controller
             $usersCard[] = new UserCard($userCard);
         }
 
-        Log::info('[USERS][profils]['.$userId.'] rad='.$radius.' | found='.sizeof($usersCard));
+        Log::info('[USERS: profils: 200: '.$userId.'] rad='.$radius.' | found='.sizeof($usersCard));
 
         return JsonBodyResponse::okResponse($this->response, $usersCard);
     }
@@ -270,7 +270,7 @@ class UsersController extends ApiV1Controller
 
         $this->Accepts->save($acceptedEntity);
 
-        Log::info('[USERS][accept] '.$meId.'-->'.$user->id);
+        Log::info('[USERS: accept: 200: '.$meId.'] '.$user->id);
 
         if ($this->Accepts->findByAccepterIdAndAcceptedId($user->id, $meId)->first()) {
             // It's a match :)
@@ -291,7 +291,7 @@ class UsersController extends ApiV1Controller
             $this->Matches->save($matchUserToMe);
             $this->Matches->save($matchMeToUser);
 
-            Log::info('[USERS][match] '.$chat->id.' => ['.$meId.'<->'.$user->id.']');
+            Log::info('[USERS: match: 200: '.$meId.'] '.$chat->id.' => ['.$meId.'<->'.$user->id.']');
 
             /**
              * push notification :)
@@ -332,7 +332,7 @@ class UsersController extends ApiV1Controller
         $declinedEntity->declined_id = $user->id;
         $this->Declines->save($declinedEntity);
 
-        Log::info('[USERS][decline] '.$meId.'-->'.$user->id);
+        Log::info('[USERS: decline: 204: '.$meId.'] '.$user->id);
 
         return $this->response->withStatus(204);
 
