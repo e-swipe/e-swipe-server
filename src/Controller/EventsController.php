@@ -54,6 +54,8 @@ class EventsController extends ApiV1Controller
             $eventCard[] = new EventCard($event);
         }
 
+        Log::info('[EVENTS][index] rad='.$radius.', limit='.$limit.', offset='.$offset.', found='.sizeof($eventCard));
+
         return JsonBodyResponse::okResponse($this->response, $eventCard);
     }
 
