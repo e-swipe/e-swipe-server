@@ -48,7 +48,7 @@ class ProfilController extends ApiV1Controller
 
         $userInfo = new UserInfo($user);
 
-        Log::debug('[PROFIL: get: 200: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
+        Log::info('[PROFIL: get: 200: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
 
         return JsonBodyResponse::okResponse($this->response, $userInfo);
     }
@@ -114,7 +114,7 @@ class ProfilController extends ApiV1Controller
         }
 
         $this->Users->save($user);
-        Log::debug('[PROFIL: patch: 204: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
+        Log::info('[PROFIL: patch: 204: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
 
         return $this->response->withStatus(204);
 
