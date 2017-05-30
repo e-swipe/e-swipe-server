@@ -99,7 +99,7 @@ class ChatsController extends ApiV1Controller
         $usersTable = TableRegistry::get('Users');
         $user = $usersTable->get($userId, ['fields' => ['firstname']]);
 
-        $reciever = $usersTable->find(['fields' => ['id', 'instance_id']])->matching('Matched',
+        $reciever = $usersTable->find('all', ['fields' => ['id', 'instance_id']])->matching('Matched',
             function ($q) use ($userId, $uuid) {
                 /** @var Query $q */
                 return $q->where(["matcher_id" => $userId, 'chat_id' => $uuid]);
