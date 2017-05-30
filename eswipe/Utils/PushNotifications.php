@@ -28,7 +28,7 @@ class PushNotifications
     public static function pushNewMessage($sender, $reciever, $chatId, $message)
     {
         $notification = new Notification($sender->firstname, $message->content, "com.e_swipe.e_swipe_CHAT_ACTIVITY");
-        $messageData = new MessageData($chatId);
+        $messageData = new MessageData($chatId, $message);
         $response = self::push($notification, $messageData, $reciever->instance_id);
         Log::info('[PUSH: message: '.$response->getStatusCode().': '.$sender->id.'] sender='.$sender->firstname.', reciever='.$reciever->id.' ('.$reciever->instance_id.')');
 
