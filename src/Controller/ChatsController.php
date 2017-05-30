@@ -60,7 +60,7 @@ class ChatsController extends ApiV1Controller
 
         $jsonChat = new Chat($chat);
 
-        Log::Debug('[CHATS: get: 200: '.$userId.'] '.$uuid.'=> limit='.$limit.' | offset='.$offset.' | since='.$since);
+        Log::info('[CHATS: get: 200: '.$userId.'] '.$uuid.'=> limit='.$limit.' | offset='.$offset.' | since='.$since);
 
         return JsonBodyResponse::okResponse($this->response, $jsonChat);
     }
