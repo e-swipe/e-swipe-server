@@ -30,6 +30,8 @@ class PushNotifications
         $notification = new Notification($sender->firstname, $message->content, "com.e_swipe.e_swipe_CHAT_ACTIVITY");
         $messageData = new MessageData($chatId);
 
+        Log::debug('[PUSH][message] sender='.$sender->firstname.', reciever='.$reciever->id.' ('.$reciever->instance_id.')');
+
         return self::push($notification, $messageData, $reciever->instance_id);
 
     }
@@ -66,6 +68,8 @@ class PushNotifications
     {
         $notification = new Notification($matcher->firstname, "New match :)", "com.e_swipe.e_swipe_CHAT_ACTIVITY");
         $messageData = new MessageData($chatId);
+
+        Log::debug('[PUSH][message] sender='.$matcher->firstname.', reciever='.$matchee->id.' ('.$matchee->instance_id.')');
 
         return self::push($notification, $messageData, $matchee->instance_id);
 
