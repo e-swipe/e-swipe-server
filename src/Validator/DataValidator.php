@@ -13,7 +13,7 @@ use Cake\Http\ServerRequest;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 
-// TODO https://book.cakephp.org/3.0/en/core-libraries/validation.html#creating-reusable-validators
+// TODO : https://book.cakephp.org/3.0/en/core-libraries/validation.html#creating-reusable-validators
 class DataValidator
 {
     public static function validateLoginFacebook(ServerRequest $request)

@@ -6,12 +6,14 @@ use App\Http\JsonBodyResponse;
 use App\Model\Table\ChatsTable;
 use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
-use Cake\Database\Query;
 use Cake\I18n\Time;
+use Cake\Log\Log;
 use Cake\Network\Exception\UnauthorizedException;
+use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Eswipe\Model\Chat;
 use Eswipe\Model\Message;
+use Eswipe\Utils\PushNotifications;
 
 /**
  * @property ChatsTable Chats
@@ -58,6 +60,8 @@ class ChatsController extends ApiV1Controller
 
         $jsonChat = new Chat($chat);
 
+        Log::Debug('[CHAT][get]['.$uuid.'] limit='.$limit.' | offset='.$offset.' | since='.$since);
+
         return JsonBodyResponse::okResponse($this->response, $jsonChat);
     }
 
@@ -87,6 +91,20 @@ class ChatsController extends ApiV1Controller
         $this->Chats->ChatsUsersMessages->save($message);
 
         $jsonMessage = new Message($message);
+
+
+        /*
+         * Push Notification :)
+         */
+        $usersTable = TableRegistry::get('Users');
+        $user = $usersTable->get($userId, ['fields' => ['firstname']]);
+
+        $reciever = $usersTable->find()->matching('Matched', function ($q) use ($userId, $uuid) {
+            /** @var Query $q */
+            return $q->where(["matcher_id" => $userId, 'chat_id' => $uuid]);
+        })->first();
+
+        PushNotifications::pushNewMessage($user, $reciever, $uuid, $message);
 
         return JsonBodyResponse::createdResponse($this->response, $jsonMessage);
     }

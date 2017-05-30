@@ -13,11 +13,14 @@ use App\Http\JsonBodyResponse;
 use App\Model\Table\UsersTable;
 use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\I18n\FrozenDate;
-use Cake\ORM\Query;
+use Cake\Network\Exception\InternalErrorException;
+use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\TableRegistry;
 use Eswipe\Model\ChatCard;
 use Eswipe\Model\UserInfo;
+use Eswipe\Utils\ImageUtils;
 
 /**
  * @property UsersTable Users
@@ -115,21 +118,43 @@ class ProfilController extends ApiV1Controller
 
     public function changePassword()
     {
-
+        // TODO
     }
 
     public function addPhoto()
     {
-        //TODO :hexadecimales
+        $userId = $this->Auth->user('user_id');
+
+        //TODO
+
+
     }
 
     public function deletePhoto($uuid)
     {
-
         $userId = $this->Auth->user('user_id');
 
+        $imagesUsersTable = TableRegistry::get('ImagesUsers');
+        $imagesTable = TableRegistry::get('ImagesUsers');
 
-        //TODO : delete photo
+        try {
+            $image = $imagesTable->findByUuid($uuid)->first();
+        } catch (RecordNotFoundException $exception) {
+            throw new UnauthorizedException($exception->getMessage());
+        }
+        $imageUsers = $imagesUsersTable->findByUserIdAndImageId($userId, $image->id)->first();
+        if (!$imageUsers) {
+            throw new UnauthorizedException('You dont own this image');
+        }
+
+        if (ImageUtils::delete($image)) {
+            $imagesUsersTable->delete($imageUsers);
+            $imagesTable->delete($image);
+        } else {
+            throw new InternalErrorException('Could\'t delete the image');
+        }
+
+        return $this->response->withStatus(204);
     }
 
     public function updatePhotosOrder()
@@ -149,7 +174,6 @@ class ProfilController extends ApiV1Controller
 
         $offset = $this->request->getQuery('offset', 0);
         $limit = $this->request->getQuery('limit', 10);
-
 
 
         $chats = $chatsTable->find()

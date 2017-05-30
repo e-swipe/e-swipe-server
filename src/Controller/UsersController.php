@@ -29,6 +29,7 @@ use Cake\Validation\Validation;
 use Eswipe\Model\Token;
 use Eswipe\Model\UserCard;
 use Eswipe\Utils\Coordinates;
+use Eswipe\Utils\PushNotifications;
 
 /**
  * Users Controller
@@ -250,7 +251,7 @@ class UsersController extends ApiV1Controller
         $meId = $this->Auth->user('user_id');
 
         try {
-            $user = $this->Users->get($uuid, ['fields' => ['id']]);
+            $user = $this->Users->get($uuid, ['fields' => ['id', 'instance_id', 'firstname']]);
         } catch (RecordNotFoundException $e) {
             throw new UnprocessedEntityException($e->getMessage());
         }
@@ -291,6 +292,14 @@ class UsersController extends ApiV1Controller
             $this->Matches->save($matchMeToUser);
 
             Log::info('[USERS][match] '.$chat->id.' => ['.$meId.'<->'.$user->id.']');
+
+            /**
+             * push notification :)
+             */
+            $matcher = $this->Users->get($meId, ['fields' => ['instance_id', 'firstname']]);
+
+            PushNotifications::pushNewMatch($matcher, $user, $chat->id);
+            PushNotifications::pushNewMatch($user, $matcher, $chat->id);
         }
 
         return $this->response->withStatus(204);

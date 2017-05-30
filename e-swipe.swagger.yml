@@ -532,8 +532,9 @@ paths:
         - $ref: '#/parameters/chatUUID'
         - name: message
           in: body
+          required: true
           schema:
-            $ref: '#/definitions/Message'
+            $ref: '#/definitions/MessageAdd'
       responses:
         201:
           description: 'SUCCESS: Created'
@@ -706,10 +707,9 @@ definitions:
         type: string
       last_name:
         type: string
-      date_of_birth:
-        type: string
-        format: date
-        example: '12/25/1998'
+      age:
+        type: integer
+        example:
       description:
         type: string
       picture_url:
@@ -768,8 +768,8 @@ definitions:
         $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
         $ref: '#/definitions/UserInfo/properties/last_name'
-      date_of_birth:
-        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+      age:
+        $ref: '#/definitions/UserInfo/properties/age'
       description:
         $ref: '#/definitions/UserInfo/properties/description'
       #genders:
@@ -793,8 +793,8 @@ definitions:
         $ref: '#/definitions/UserInfo/properties/first_name'
       last_name:
         $ref: '#/definitions/UserInfo/properties/last_name'
-      date_of_birth:
-        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+      age:
+        $ref: '#/definitions/UserInfo/properties/age'
       picture_url:
         $ref: '#/definitions/UserInfo/properties/picture_url'
       position:
@@ -808,7 +808,9 @@ definitions:
       last_name:
         $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+        type: string
+        format : date
+        example: "12/25/1995"
       #email:
       #  type: string
       #  format: email
@@ -840,7 +842,7 @@ definitions:
       last_name:
         $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+        $ref: '#/definitions/UserPatch/properties/date_of_birth'
       gender:
         $ref: '#/definitions/UserInfo/properties/gender'
       email:
@@ -864,7 +866,7 @@ definitions:
       last_name:
         $ref: '#/definitions/UserInfo/properties/last_name'
       date_of_birth:
-        $ref: '#/definitions/UserInfo/properties/date_of_birth'
+        $ref: '#/definitions/UserPatch/properties/date_of_birth'
       gender:
         $ref: '#/definitions/UserInfo/properties/gender'
       email:
@@ -1006,7 +1008,20 @@ definitions:
         type: string
       date:
         type: string
-        format: date
+        format: datetime
+  MessageAdd:
+    title: MessageAdd
+    type: object
+    description: A message to add to chat
+    required:
+      - content
+      - date
+    properties:
+      content:
+        $ref: '#/definitions/Message/properties/content'
+      date:
+        type: string
+        $ref: '#/definitions/Message/properties/date'
   Token:
     title: Token
     type: object

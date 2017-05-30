@@ -2,6 +2,8 @@
 
 namespace App\Model\Table;
 
+use App\Model\Entity\ImagesUser;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -12,13 +14,13 @@ use Cake\Validation\Validator;
  * @property \Cake\ORM\Association\BelongsTo $Users
  * @property \Cake\ORM\Association\BelongsTo $Images
  *
- * @method \App\Model\Entity\ImagesUser get($primaryKey, $options = [])
- * @method \App\Model\Entity\ImagesUser newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\ImagesUser[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\ImagesUser|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\ImagesUser patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\ImagesUser[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\ImagesUser findOrCreate($search, callable $callback = null, $options = [])
+ * @method ImagesUser get($primaryKey, $options = [])
+ * @method ImagesUser newEntity($data = null, array $options = [])
+ * @method ImagesUser[] newEntities(array $data, array $options = [])
+ * @method ImagesUser|bool save(EntityInterface $entity, $options = [])
+ * @method ImagesUser patchEntity(EntityInterface $entity, array $data, array $options = [])
+ * @method ImagesUser[] patchEntities($entities, array $data, array $options = [])
+ * @method ImagesUser findOrCreate($search, callable $callback = null, $options = [])
  */
 class ImagesUsersTable extends Table
 {
