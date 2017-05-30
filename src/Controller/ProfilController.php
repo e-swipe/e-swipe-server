@@ -15,6 +15,7 @@ use App\Network\Exception\UnprocessedEntityException;
 use App\Validator\DataValidator;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\I18n\FrozenDate;
+use Cake\Log\Log;
 use Cake\Network\Exception\InternalErrorException;
 use Cake\Network\Exception\UnauthorizedException;
 use Cake\ORM\TableRegistry;
@@ -46,6 +47,8 @@ class ProfilController extends ApiV1Controller
         );
 
         $userInfo = new UserInfo($user);
+
+        Log::debug('[PROFIL: get: 200: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
 
         return JsonBodyResponse::okResponse($this->response, $userInfo);
     }
@@ -111,6 +114,7 @@ class ProfilController extends ApiV1Controller
         }
 
         $this->Users->save($user);
+        Log::debug('[PROFIL: patch: 204: '.$user_id.'] '.$user->firstname.' '.$user->lastname);
 
         return $this->response->withStatus(204);
 
