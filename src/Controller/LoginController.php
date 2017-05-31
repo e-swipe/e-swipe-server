@@ -77,7 +77,7 @@ class LoginController extends AppController
 
         $token = new Token($session->uuid);
 
-        Log::info('[LOGIN: default: 201: '.$user->id.'] '.$session->uuid.' : '.$user->id);
+        Log::info('[LOGIN: default: 200: '.$user->id.'] '.$session->uuid.' : '.$user->id);
 
         return JsonBodyResponse::okResponse($this->response, $token);
     }
@@ -94,13 +94,13 @@ class LoginController extends AppController
         $facebookAuth = $this->request->getQuery('facebook_auth');
         $instanceId = $this->request->getQuery('instance_id');
         $userData = $this->request->getData();
-        $accessToken = Configure::read('facebook.id')."|".Configure::read('facebook.key');
 
         $message = DataValidator::validateLoginFacebook($this->request);
         if (!is_null($message)) {
             throw new UnprocessedEntityException($message);
         }
 
+        $accessToken = Configure::read('facebook.id')."|".Configure::read('facebook.key');
         $answer = (new Client())->get(
             'https://graph.facebook.com/debug_token',
             ['input_token' => $facebookAuth, 'access_token' => $accessToken]

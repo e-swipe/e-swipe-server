@@ -197,8 +197,8 @@ class UsersController extends ApiV1Controller
             ->between('Users.longitude', $bounding->minLong, $bounding->maxLong)
             ->notEq('Users.id', $user->id)
             ->between('Users.date_of_birth',
-                Date::now()->subYears($user->max_age),
-                Date::now()->subYears($user->min_age))
+                Date::now()->subYears($user->max_age)->toDateString(),
+                Date::now()->subYears($user->min_age)->toDateString())
             ->eq('Users.is_visible', true);
 
         if ($usersLookingFor) {

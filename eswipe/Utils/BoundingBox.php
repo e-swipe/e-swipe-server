@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Eswipe\Model;
+namespace Eswipe\Utils;
 
 
 class BoundingBox

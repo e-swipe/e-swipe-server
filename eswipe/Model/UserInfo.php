@@ -12,7 +12,7 @@ class UserInfo
     public $uuid;
     public $first_name;
     public $last_name;
-    public $date_of_birth;
+    public $age;
     public $description;
     public $picture_url;
     public $gender;

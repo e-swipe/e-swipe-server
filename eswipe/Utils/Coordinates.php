@@ -4,7 +4,6 @@
 namespace Eswipe\Utils;
 
 
-use Eswipe\Model\BoundingBox;
 use Eswipe\Model\Position;
 
 class Coordinates
